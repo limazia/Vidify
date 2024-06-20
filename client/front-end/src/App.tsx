@@ -1,16 +1,22 @@
-import { initDB } from 'react-indexed-db-hook'
-import { DBConfig } from './config/db'
-import Home from './pages'
-import { Providers } from './providers'
+import "./globals.css";
 
-initDB(DBConfig)
+import { initDB } from "react-indexed-db-hook";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "react-router-dom";
 
-function App() {
+import { Toastify } from "@/components/toastify";
+
+import { DBConfig } from "./shared/lib/db";
+import { queryClient } from "./shared/lib/react-query";
+import { router } from "./routes";
+
+initDB(DBConfig);
+
+export function App() {
   return (
-    <Providers>
-      <Home />
-    </Providers>
-  )
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <Toastify autoClose={5000} />
+    </QueryClientProvider>
+  );
 }
-
-export default App
