@@ -1,6 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { api } from "@/shared/lib/api";
@@ -23,6 +24,8 @@ type FormProps = {
 };
 
 export function FormComponent({ onSubmit }: FormProps) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -34,12 +37,25 @@ export function FormComponent({ onSubmit }: FormProps) {
     },
   });
 
-  async function handler(data: FormSchema) {
-    const {
-      data: { video_id },
-    } = await api.post("/generate", {
-      ...data,
-    });
+  const { mutateAsync: createVideo } = useMutation({
+    mutationFn: async (data: FormSchema) => {
+      const response = await api.post("/generate", {
+        ...data,
+      });
+
+      const { video_id } = response.data;
+
+      return video_id;
+    },
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ["videos"],
+      });
+    },
+  });
+
+  async function handleCreateVideo(data: FormSchema) {
+    const { video_id } = await createVideo(data);
 
     const dbData = {
       uuid: video_id,
@@ -52,7 +68,7 @@ export function FormComponent({ onSubmit }: FormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(handler)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleCreateVideo)} className="space-y-4">
       <div className="flex flex-col space-y-2">
         <Label htmlFor="term">Termo</Label>
         <Input
@@ -64,7 +80,7 @@ export function FormComponent({ onSubmit }: FormProps) {
         />
 
         <small className="text-gray-400">
-          Termo para explicar, será usado para gerar o vídeo
+          Este termo será utilizado para explicar e gerar o vídeo.
         </small>
 
         {errors.term && (

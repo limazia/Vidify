@@ -1,45 +1,36 @@
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from 'openai';
 
 import { removeFirstWordInCodeBlocks } from "../utils";
-import { OPENAI_API_KEY } from "../config/environment";
-import { languagePrograms } from "./GenerateCarbonCode";
+import { env } from "../env";
 
 type GenerateContentReturn = {
   title: string;
   tags: string[];
-  programming_language: (typeof languagePrograms)[keyof typeof languagePrograms];
   code_example: string;
   narration: string;
 };
 
 type GenerateContentParams = {
-  feature: string;
-  programming_language: string;
+  term: string;
 };
 
-const configuration = new Configuration({
-  apiKey: OPENAI_API_KEY,
+const openai = new OpenAI({
+  apiKey: env.OPENAI_API_KEY, // This is the default and can be omitted
 });
 
-const openai = new OpenAIApi(configuration);
-
-export async function generateContent({
-  feature,
-  programming_language,
-}: GenerateContentParams) {
+export async function generateContent({ term }: GenerateContentParams) {
   try {
-    const chatCompletion = await openai.createChatCompletion({
-      // model: 'gpt-3.5-turbo-16k',
-      //model: "gpt-3.5-turbo-0613",
+    const chatCompletion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
-          content: `You are an AI assistant trained to provide advice on software development.`,
+          content:
+            "You are an AI assistant trained to provide responses of the most diverse types about nature, the world, cars, people, etc.",
         },
         {
           role: "user",
-          content: `Explain the use of ${feature} in ${programming_language}, what it is for, give examples of use and explain details of the example code. Return all answer in portuguese. Be polite, as this is for a social media video, at the end of the narration ask to follow for more tips and to leave a comment`,
+          content: `Explain ${term}, what it is for, give examples of use, etc. Return all answers in Portuguese. Be polite, as this is a video for social media, at the end of the narration ask to follow along for more tips and to leave a comment`,
         },
       ],
       functions: [
@@ -51,21 +42,15 @@ export async function generateContent({
             properties: {
               title: {
                 type: "string",
-                description:
-                  "title of feature or lib to be explained. Only one word",
+                description: "title of term to be explained. Only one word",
               },
               tags: {
                 type: "array",
                 description:
-                  "tags with the benefits of using this feature or lib. Each tag is only one word  should not be is a programming language",
+                  "tags with the benefits of using this term. Each tag is only one word",
                 items: {
                   type: "string",
                 },
-              },
-              programming_language: {
-                type: "string",
-                description:
-                  "programming language based in answer, or technologies for ex: nodejs, python, typescript ,reactjs, reactnative, javascript, python, java, etc",
               },
               code_example: {
                 type: "string",
@@ -75,7 +60,7 @@ export async function generateContent({
               narration: {
                 type: "string",
                 description:
-                  "Text for tip narration in video. give examples of use. Do not add example code. Welcome and explain like a teacher",
+                  "Text for tip narration in video. give examples of use. Welcome and explain like a teacher",
               },
             },
           },
@@ -89,7 +74,8 @@ export async function generateContent({
     });
 
     const args = JSON.parse(
-      chatCompletion.data.choices[0].message?.function_call?.arguments ?? ""
+      //chatCompletion.data.choices[0].message?.function_call?.arguments ?? ""
+      chatCompletion.choices[0].message.content ?? ""
     );
 
     args.narration = args.narration.replace(/```[\s\S]*?```/g, "");
@@ -97,10 +83,6 @@ export async function generateContent({
     if (args.code_example[0] === "`") {
       args.code_example = removeFirstWordInCodeBlocks(args.code_example);
     }
-
-    args.programming_language = programming_language
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .toLowerCase();
 
     return args as GenerateContentReturn;
   } catch (error: unknown) {

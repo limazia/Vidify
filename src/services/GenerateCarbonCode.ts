@@ -2,37 +2,15 @@ import axios, { AxiosResponse } from "axios";
 import Jimp from "jimp";
 import path from "node:path";
 
-import { CARBONARA_HOST, PATH_RESULTS } from "../config/environment";
+import { env } from "../env";
 
 type GenerateCarbonCodeParams = {
   code: string;
-  language: (typeof languagePrograms)[keyof typeof languagePrograms];
   id: string;
 };
 
-export const languagePrograms = {
-  nodejs: "javascript",
-  javascript: "javascript",
-  typescript: "typescript",
-  python: "python",
-  java: "java",
-  csharp: "csharp",
-  php: "php",
-  ruby: "ruby",
-  go: "go",
-  kotlin: "kotlin",
-  swift: "swift",
-  rust: "rust",
-  c: "c",
-  cpp: "cpp",
-  dart: "dart",
-  r: "r",
-  scala: "scala",
-} as const;
-
 export async function generateCarbonCode({
   code,
-  language,
   id,
 }: GenerateCarbonCodeParams) {
   const data = {
@@ -41,7 +19,7 @@ export async function generateCarbonCode({
     theme: "dracula-pro",
     // theme: 'base16-dark',
     windowTheme: "none",
-    language: languagePrograms[language] ?? "auto",
+    language: "auto",
     dropShadow: true,
     dropShadowOffsetY: "10px",
     dropShadowBlurRadius: "28px",
@@ -63,7 +41,7 @@ export async function generateCarbonCode({
 
   try {
     const response: AxiosResponse = await axios.post(
-      `http://${CARBONARA_HOST}:3000/api/cook`,
+      `http://${env.CARBONARA_HOST}:3000/api/cook`,
       data,
       {
         headers: { "Content-Type": "application/json" },
@@ -78,7 +56,9 @@ export async function generateCarbonCode({
     const img: Jimp = await Jimp.read(Buffer.from(response.data));
 
     // Salve a imagem como PNG
-    img.write(path.resolve(process.cwd(), `${PATH_RESULTS}/${id}/code.png`));
+    img.write(
+      path.resolve(process.cwd(), `${env.PATH_RESULTS}/${id}/code.png`)
+    );
   } catch (error) {
     console.error(error);
   }

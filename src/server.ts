@@ -1,63 +1,57 @@
-import cors from 'cors'
-import express, { Request, Response } from 'express'
-import { Server } from 'http'
-import { v4 as uuid } from 'uuid'
+import express, { Request, Response } from "express";
+import { Server } from "http";
+import { v4 as uuid } from "uuid";
+import cors from "cors";
+import fs from "node:fs";
+import path from "node:path";
 
-import { PATH_RESULTS } from './config/environment'
+import { videoGenerator } from "./services";
+import { initializeSocket } from "./socket";
+import { env } from "./env";
 
-import { videoGenerator } from './services'
-import { initializeSocket } from './socket'
+const app = express();
+const PORT = 10000;
 
-import fs from 'node:fs'
-import path from 'node:path'
+const httpServer = new Server(app);
 
-const app = express()
-const PORT = 10000
+initializeSocket(httpServer);
 
-app.use(
-  cors({
-    allowedHeaders: '*',
-    origin: '*'
-  })
-)
+app.use(cors());
+app.use(express.json());
+app.use("/", express.static(path.join(process.cwd(), "client/front-end/dist")));
 
-const httpServer = new Server(app)
+app.post("/api/generate", async (req: Request, res: Response) => {
+  const { term } = req.body;
 
-initializeSocket(httpServer)
+  const id = uuid();
 
-app.use(express.json())
+  videoGenerator(term, id);
 
-app.use('/', express.static(path.join(process.cwd(), 'client/front-end/dist')))
+  res.status(200).json({ video_id: id });
+});
 
-app.post('/api/generate', async (req: Request, res: Response) => {
-  const { feature, programming_language } = req.body
+app.get("/api/download/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
 
-  const id = uuid()
-
-  videoGenerator(feature, programming_language, id)
-
-  res.status(200).json({ video_id: id })
-})
-
-app.get('/api/download/:id', (req: Request, res: Response) => {
-  const { id } = req.params
-
-  const videoFilePath = path.join(process.cwd(), `${PATH_RESULTS}/${id}/output_final_video.mp4`)
+  const videoFilePath = path.join(
+    process.cwd(),
+    `${env.PATH_RESULTS}/${id}/output_final_video.mp4`
+  );
   if (!fs.existsSync(videoFilePath)) {
-    return res.status(404).send('Video not found')
+    return res.status(404).send("Video not found");
   }
 
-  res.setHeader('Content-Type', 'video/mp4')
-  res.setHeader('Content-Disposition', `attachment; filename=${id}.mp4`)
+  res.setHeader("Content-Type", "video/mp4");
+  res.setHeader("Content-Disposition", `attachment; filename=${id}.mp4`);
 
-  const stream = fs.createReadStream(videoFilePath)
-  stream.pipe(res)
-})
+  const stream = fs.createReadStream(videoFilePath);
+  stream.pipe(res);
+});
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(process.cwd() + '/client/front-end/dist'))
-})
+app.get("*", (req, res) => {
+  res.sendFile(path.join(process.cwd() + "/client/front-end/dist"));
+});
 
 httpServer.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-})
+  console.log(`Server is running on port ${PORT}`);
+});

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useIndexedDB } from "react-indexed-db-hook";
-import { FileVideo } from "lucide-react";
+import { Ghost } from "lucide-react";
 
 import { socket } from "@/shared/lib/socket";
 import { VideoProps } from "@/shared/types/Video";
 
+import { Header } from "@/components/header";
 import { CardVideo } from "./card-video";
 import { FormComponent } from "./form";
 
@@ -72,35 +73,36 @@ export function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      <div className="flex items-center text-primary mb-10">
-        <FileVideo className="size-16" />
-        <h1 className="text-primary text-3xl font-bold tracking-wider">
-          Dark Video Maker
-        </h1>
-      </div>
+      <Header />
 
       <div className="w-[60%]">
         <FormComponent onSubmit={onSubmit} />
       </div>
 
       <div className="flex flex-col gap-2 w-[60%]">
-        {videos.length > 0 && (
-          <>
-            <p className="text-gray-600 text-md font-bold mt-10">
-              Seus vídeos:
-            </p>
-            <div className="flex flex-col gap-2 max-h-[320px] overflow-auto pr-[1px]">
-              {videos
-                .sort(
-                  (a, b) =>
-                    a.term.charAt(0).toLowerCase().charCodeAt(0) -
-                    b.term.charAt(0).toLowerCase().charCodeAt(0)
-                )
-                .map((video) => (
-                  <CardVideo key={video.uuid} videoData={video} />
-                ))}
+        <p className="text-black text-md font-bold mt-10">Seus vídeos</p>
+
+        {videos.length === 0 && (
+          <div className="flex gap-3 border rounded-md w-full p-12 justify-center items-center">
+            <div className="flex flex-col items-center gap-4">
+              <Ghost className="size-20" />
+              <span className="text-base">Nenhum vídeo encontrado</span>
             </div>
-          </>
+          </div>
+        )}
+
+        {videos.length > 0 && (
+          <div className="flex flex-col gap-2 max-h-[320px] overflow-auto pr-[1px]">
+            {videos
+              .sort(
+                (a, b) =>
+                  a.term.charAt(0).toLowerCase().charCodeAt(0) -
+                  b.term.charAt(0).toLowerCase().charCodeAt(0)
+              )
+              .map((video) => (
+                <CardVideo key={video.uuid} videoData={video} />
+              ))}
+          </div>
         )}
       </div>
     </div>

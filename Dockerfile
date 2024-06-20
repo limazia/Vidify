@@ -25,7 +25,6 @@ WORKDIR /usr/src/app
 RUN npm i
 RUN npm run build
 
-
 EXPOSE 10000
 
 #CMD ["yarn", "start"]

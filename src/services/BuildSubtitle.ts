@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import { promisify } from "node:util";
 import { parse, stringify } from "ass-compiler";
 
-import { PATH_RESULTS } from "../config/environment";
+import { env } from "../env";
 
 type Mark = {
   time: number;
@@ -107,17 +107,17 @@ export async function styleFontAss(filePath: string) {
 }
 
 export const buildSubtitle = async (id: string) => {
-  const filePathMarks = `${PATH_RESULTS}/${id}/subtitles.marks`;
+  const filePathMarks = `${env.PATH_RESULTS}/${id}/subtitles.marks`;
 
   const marks = await getMarks(filePathMarks);
 
   const captions = createCaptions(marks);
 
-  await fs.writeFile(`${PATH_RESULTS}/${id}/captions.srt`, captions);
+  await fs.writeFile(`${env.PATH_RESULTS}/${id}/captions.srt`, captions);
 
-  const outputAss = `${PATH_RESULTS}/${id}/captions.ass`;
+  const outputAss = `${env.PATH_RESULTS}/${id}/captions.ass`;
 
-  await exec(`ffmpeg -i ${PATH_RESULTS}/${id}/captions.srt ${outputAss}`);
+  await exec(`ffmpeg -i ${env.PATH_RESULTS}/${id}/captions.srt ${outputAss}`);
 
   await styleFontAss(outputAss);
 

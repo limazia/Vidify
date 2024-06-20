@@ -2,8 +2,8 @@ import { exec as execCallback } from "child_process";
 import { promisify } from "util";
 import path from "node:path";
 
-import { PATH_RESULTS } from "../config/environment";
 import { getRandomInt } from "../utils";
+import { env } from "../env";
 
 const exec = promisify(execCallback);
 
@@ -21,24 +21,24 @@ export const buildVideo = async (id: string) => {
   );
   const audio: string = path.resolve(
     process.cwd(),
-    `${PATH_RESULTS}/${id}/audio.mp3`
+    `${env.PATH_RESULTS}/${id}/audio.mp3`
   );
   const imagem: string = path.resolve(
     process.cwd(),
-    `${PATH_RESULTS}/${id}/code.png`
+    `${env.PATH_RESULTS}/${id}/code.png`
   );
   const legenda: string = path.resolve(
     process.cwd(),
-    `${PATH_RESULTS}/${id}/captions.ass`
+    `${env.PATH_RESULTS}/${id}/captions.ass`
   );
   const cover: string = path.resolve(
     process.cwd(),
-    `${PATH_RESULTS}/${id}/cover.png`
+    `${env.PATH_RESULTS}/${id}/cover.png`
   );
 
   const outputFinalVideo: string = path.resolve(
     process.cwd(),
-    `${PATH_RESULTS}/${id}/output_final_video.mp4`
+    `${env.PATH_RESULTS}/${id}/output_final_video.mp4`
   );
 
   const audioDuration = await getMediaDuration(audio);
@@ -48,7 +48,7 @@ export const buildVideo = async (id: string) => {
 
   const loopedVideoPath = path.resolve(
     process.cwd(),
-    `${PATH_RESULTS}/${id}/looped_video.mp4`
+    `${env.PATH_RESULTS}/${id}/looped_video.mp4`
   );
 
   const loopCommand = `

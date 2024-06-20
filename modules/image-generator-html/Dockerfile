@@ -10,13 +10,13 @@ WORKDIR /usr/app
 # Install app dependencies
 COPY package*.json ./
 
-RUN yarn
+RUN npm i
 
 # Bundle app source
 COPY . .
 
-RUN yarn build
+RUN npm run build
 
 EXPOSE 2000
 
-CMD [ "yarn", "start" ]
+CMD ["npm", "start"]
