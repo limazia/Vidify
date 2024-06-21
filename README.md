@@ -57,4 +57,4 @@ O `docker-compose.yml` define como os serviços do DarkClip são orquestrados. I
 
 ## Desenvolvimento Frontend
 
-O frontend do DarkClip foi desenvolvido usando Vite, Shadcn, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/front-end`. Para desenvolver localmente, navegue até este diretório e execute `yarn` para instalar as dependências e `yarn dev` para iniciar o servidor de desenvolvimento.
+O frontend do DarkClip foi desenvolvido usando Vite, Shadcn, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/front-end`. Para desenvolver localmente, navegue até este diretório e execute `npm i` para instalar as dependências e `npm run dev` para iniciar o servidor de desenvolvimento.
