@@ -20,7 +20,7 @@ export const CardVideo = ({ videoData }: CardVideoProps) => {
 
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-col">
-          <span className="font-bold capitalize">{video.term}</span>
+          <span className="font-bold">{video.term}</span>
           <span className="text-sm text-gray-500">{video.status_message}</span>
         </div>
 

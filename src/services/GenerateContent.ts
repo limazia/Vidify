@@ -6,7 +6,6 @@ import { env } from "../env";
 type GenerateContentReturn = {
   title: string;
   tags: string[];
-  code_example: string;
   narration: string;
 };
 
@@ -20,17 +19,17 @@ const openai = new OpenAI({
 
 export async function generateContent({ term }: GenerateContentParams) {
   try {
-    const chatCompletion = await openai.chat.completions.create({
+    const result = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
           content:
-            "You are an AI assistant trained to provide responses of the most diverse types about nature, the world, cars, people, etc.",
+            "You are an AI assistant trained to provide a wide variety of responses on topics such as nature, the world, cars, people, and more.",
         },
         {
           role: "user",
-          content: `Explain ${term}, what it is for, give examples of use, etc. Return all answers in Portuguese. Be polite, as this is a video for social media, at the end of the narration ask to follow along for more tips and to leave a comment`,
+          content: `Explain ${term}, its purpose, and provide examples of use. All answers should be in Portuguese and maintain a polite tone, as this content will be used in a social media video. At the end of the explanation, invite viewers to follow for more tips and to leave a comment.`,
         },
       ],
       functions: [
@@ -52,11 +51,6 @@ export async function generateContent({ term }: GenerateContentParams) {
                   type: "string",
                 },
               },
-              code_example: {
-                type: "string",
-                description:
-                  "code example based in example. Should be in markdown. Do not add comments",
-              },
               narration: {
                 type: "string",
                 description:
@@ -69,22 +63,16 @@ export async function generateContent({ term }: GenerateContentParams) {
       function_call: {
         name: "generateContentForVideo",
       },
-
       temperature: 0.1,
     });
 
-    console.log(JSON.stringify(chatCompletion, null, 2));
+    const choices = result.choices[0]!.message.function_call?.arguments;
 
-    const args = JSON.parse(
-      //chatCompletion.data.choices[0].message?.function_call?.arguments ?? ""
-      chatCompletion.choices[0].message.content ?? ""
-    );
+    const args = JSON.parse(choices as string);
+
+    console.log("args", args);
 
     args.narration = args.narration.replace(/```[\s\S]*?```/g, "");
-
-    if (args.code_example[0] === "`") {
-      args.code_example = removeFirstWordInCodeBlocks(args.code_example);
-    }
 
     return args as GenerateContentReturn;
   } catch (error: unknown) {

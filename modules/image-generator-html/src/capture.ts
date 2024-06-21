@@ -11,16 +11,15 @@ type ParamsCapture = {
 };
 
 export const capture = async (params: ParamsCapture) => {
-  const browser = await puppeteer.launch({
+  const browser = await chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
-    headless: true,
+    headless: false, // chromium.headless
     ignoreHTTPSErrors: true,
-    ignoreDefaultArgs: ["--disable-extensions"],
   });
 
-  const page = await browser.newPage();
+  let page = await browser.newPage();
 
   const baseUrl = `http://${process.env.HOST ?? "localhost"}:${process.env.PORT ?? 2000}`;
   const query = formatParams(params);

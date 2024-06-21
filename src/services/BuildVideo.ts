@@ -23,10 +23,6 @@ export const buildVideo = async (id: string) => {
     process.cwd(),
     `${env.PATH_RESULTS}/${id}/audio.mp3`
   );
-  const imagem: string = path.resolve(
-    process.cwd(),
-    `${env.PATH_RESULTS}/${id}/code.png`
-  );
   const legenda: string = path.resolve(
     process.cwd(),
     `${env.PATH_RESULTS}/${id}/captions.ass`
@@ -74,7 +70,6 @@ export const buildVideo = async (id: string) => {
     ffmpeg -y
     -i "${loopedVideoPath}"
     -i "${audio}"
-    -i "${imagem}"
     -i "${cover}"
     -filter_complex "${complexFilter.trim()}"
     -map "[outv]"

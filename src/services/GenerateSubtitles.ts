@@ -23,6 +23,7 @@ const polly = new PollyClient({
   },
 });
 const s3 = new S3Client({
+  region: env.AWS_REGION,
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY_ID,
     secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
@@ -40,10 +41,8 @@ export const generateSubtitle = async ({
     const params: StartSpeechSynthesisTaskCommandInput = {
       ...config,
       OutputS3KeyPrefix: keyPrefix,
-
       OutputFormat: "json",
       Text: text,
-
       SpeechMarkTypes: ["word"],
     };
 

@@ -1,9 +1,9 @@
-import "dotenv/config";
 import express from "express";
+
 import { capture } from "./capture";
 
 const app = express();
-const port = process.env.PORT ?? 2000;
+const port = 2000;
 
 // Serve arquivos estáticos da pasta 'public'
 app.use(express.static("public"));

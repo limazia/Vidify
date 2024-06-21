@@ -1,7 +1,7 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { z } from "zod";
 
 import { api } from "@/shared/lib/api";
@@ -31,8 +31,6 @@ type FormProps = {
 };
 
 export function FormComponent({ onSubmit }: FormProps) {
-  const queryClient = useQueryClient();
-
   const {
     register,
     handleSubmit,
@@ -45,25 +43,9 @@ export function FormComponent({ onSubmit }: FormProps) {
     },
   });
 
-  const { mutateAsync: createVideo } = useMutation({
-    mutationFn: async (data: FormSchema) => {
-      const response = await api.post("/generate", {
-        ...data,
-      });
-
-      const { video_id } = response.data;
-
-      return video_id;
-    },
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: ["videos"],
-      });
-    },
-  });
-
   async function handleCreateVideo(data: FormSchema) {
-    const { video_id } = await createVideo(data);
+    const response = await api.post("/generate", data);
+    const { video_id } = response.data;
 
     const dbData: VideoProps = {
       uuid: video_id,
@@ -72,9 +54,9 @@ export function FormComponent({ onSubmit }: FormProps) {
       status_message: "Seu vídeo será processado em breve",
     };
 
-    onSubmit(dbData);
-
     reset();
+
+    onSubmit(dbData);
   }
 
   const titleRandom =
@@ -101,7 +83,11 @@ export function FormComponent({ onSubmit }: FormProps) {
             className="w-40 font-bold"
             disabled={isSubmitting || !isDirty || !isValid}
           >
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <Plus className="mr-2 size-4" />
+            )}
             Gerar
           </Button>
         </div>
