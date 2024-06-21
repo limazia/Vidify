@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 import { removeFirstWordInCodeBlocks } from "../utils";
 import { env } from "../env";
@@ -15,7 +15,7 @@ type GenerateContentParams = {
 };
 
 const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY, // This is the default and can be omitted
+  apiKey: env.OPENAI_API_KEY,
 });
 
 export async function generateContent({ term }: GenerateContentParams) {
@@ -72,6 +72,8 @@ export async function generateContent({ term }: GenerateContentParams) {
 
       temperature: 0.1,
     });
+
+    console.log(JSON.stringify(chatCompletion, null, 2));
 
     const args = JSON.parse(
       //chatCompletion.data.choices[0].message?.function_call?.arguments ?? ""

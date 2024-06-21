@@ -1,14 +1,6 @@
-# Tik Tech
+# DarkClip
 
-O Tik Tech é um aplicativo gerador de vídeos que explica frameworks e bibliotecas de Node.js e Python. Ele automatiza a criação de vídeos explicativos sobre como utilizar diferentes frameworks e bibliotecas, gerando código de exemplo, narrando os passos e juntando tudo em um vídeo. Este documento fornecerá um guia passo a passo sobre como configurar e usar o Tik Tech.
-
-**Utilizando o app**
-
-https://github.com/viniciussantos45/tik-tech/assets/47752947/aa6c95d4-7a2c-40f3-a7fb-fc112fff9212
-
-
-
-
+O DarkClip é um aplicativo gerador de vídeos que explica frameworks e bibliotecas de Node.js e Python. Ele automatiza a criação de vídeos explicativos sobre como utilizar diferentes frameworks e bibliotecas, gerando código de exemplo, narrando os passos e juntando tudo em um vídeo. Este documento fornecerá um guia passo a passo sobre como configurar e usar o DarkClip.
 
 ## Tecnologias Utilizadas
 
@@ -28,8 +20,13 @@ https://github.com/viniciussantos45/tik-tech/assets/47752947/aa6c95d4-7a2c-40f3-
 Crie um arquivo chamado `.env` no diretório raiz do projeto, usando o seguinte formato baseado no `.env.example` fornecido:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key 
-PATH_RESULTS="results" 
+# App
+PATH_RESULTS="results"
+
+# OpenAi
+OPENAI_API_KEY=your_openai_api_key
+
+# AWS
 AWS_REGION="us-east-1" 
 AWS_ACCESS_KEY_ID=your_aws_access_key_id 
 AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
@@ -37,18 +34,18 @@ AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
 
 ### Dockerfile
 
-O `Dockerfile` incluído no projeto define o ambiente necessário para executar o Tik Tech. Ele começa com uma imagem base do Node.js, instala o FFmpeg, copia o código fonte do projeto para a imagem e constrói o frontend e a API antes de expor a porta 10000 para comunicação.
+O `Dockerfile` incluído no projeto define o ambiente necessário para executar o DarkClip. Ele começa com uma imagem base do Node.js, instala o FFmpeg, copia o código fonte do projeto para a imagem e constrói o frontend e a API antes de expor a porta 10000 para comunicação.
 
 ### Docker Compose
 
-O `docker-compose.yml` define como os serviços do Tik Tech são orquestrados. Inclui três serviços: `api`, `image-generator`, e `carbonara`. O serviço `api` constrói o contexto atual, expõe as portas necessárias, e define as dependências necessárias. Os serviços `image-generator` e `carbonara` são configurados de maneira semelhante, com o `image-generator` construindo a partir de um subdiretório do projeto.
+O `docker-compose.yml` define como os serviços do DarkClip são orquestrados. Inclui três serviços: `api`, `image-generator`, e `carbonara`. O serviço `api` constrói o contexto atual, expõe as portas necessárias, e define as dependências necessárias. Os serviços `image-generator` e `carbonara` são configurados de maneira semelhante, com o `image-generator` construindo a partir de um subdiretório do projeto.
 
-## Executando o Tik Tech
+## Executando o DarkClip
 
 1. Certifique-se de que o Docker e o Docker Compose estão instalados em sua máquina.
 2. Navegue até o diretório raiz do projeto no terminal.
 3. Execute o comando `docker-compose up --build -d` para construir e iniciar todos os serviços definidos no `docker-compose.yml`.
-4. Uma vez que todos os serviços estejam em execução, acesse `http://localhost:10000` em seu navegador para acessar a interface do usuário do Tik Tech.
+4. Uma vez que todos os serviços estejam em execução, acesse `http://localhost:10000` em seu navegador para acessar a interface do usuário do DarkClip.
 5. Use a interface do usuário para gerar vídeos, especificando a feature e a linguagem de programação desejada.
 
 ## Rotas da API
@@ -60,4 +57,4 @@ O `docker-compose.yml` define como os serviços do Tik Tech são orquestrados. I
 
 ## Desenvolvimento Frontend
 
-O frontend do Tik Tech foi desenvolvido usando Vite, Shadcn, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/front-end`. Para desenvolver localmente, navegue até este diretório e execute `yarn` para instalar as dependências e `yarn dev` para iniciar o servidor de desenvolvimento.
+O frontend do DarkClip foi desenvolvido usando Vite, Shadcn, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/front-end`. Para desenvolver localmente, navegue até este diretório e execute `yarn` para instalar as dependências e `yarn dev` para iniciar o servidor de desenvolvimento.

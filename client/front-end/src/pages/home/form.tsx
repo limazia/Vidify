@@ -6,15 +6,22 @@ import { z } from "zod";
 
 import { api } from "@/shared/lib/api";
 import { VideoProps } from "@/shared/types/Video";
+import { suggestions } from "./suggestions";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const TERM_MIN_LENGTH = 5;
+
 const formSchema = z.object({
-  term: z.string({
-    required_error: "Preencha com um termo",
-  }),
+  term: z
+    .string({
+      message: "Preencha com um termo",
+    })
+    .min(TERM_MIN_LENGTH, {
+      message: `O termo deve ter pelo menos ${TERM_MIN_LENGTH} caracteres.`,
+    }),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -29,7 +36,8 @@ export function FormComponent({ onSubmit }: FormProps) {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    reset,
+    formState: { errors, isSubmitting, isDirty, isValid },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,7 +65,7 @@ export function FormComponent({ onSubmit }: FormProps) {
   async function handleCreateVideo(data: FormSchema) {
     const { video_id } = await createVideo(data);
 
-    const dbData = {
+    const dbData: VideoProps = {
       uuid: video_id,
       term: data.term,
       status: "pending",
@@ -65,19 +73,38 @@ export function FormComponent({ onSubmit }: FormProps) {
     };
 
     onSubmit(dbData);
+
+    reset();
   }
+
+  const titleRandom =
+    suggestions[Math.floor(Math.random() * suggestions.length)];
 
   return (
     <form onSubmit={handleSubmit(handleCreateVideo)} className="space-y-4">
       <div className="flex flex-col space-y-2">
-        <Label htmlFor="term">Termo</Label>
-        <Input
-          id="term"
-          className="w-full"
-          placeholder="Ex: top 5 carros mais raro do mundo"
-          disabled={isSubmitting}
-          {...register("term")}
-        />
+        <Label htmlFor="term" className="font-bold">
+          Termo
+        </Label>
+
+        <div className="flex gap-5">
+          <Input
+            id="term"
+            className="w-full"
+            placeholder={`Ex: ${titleRandom}`}
+            disabled={isSubmitting}
+            {...register("term")}
+          />
+
+          <Button
+            type="submit"
+            className="w-40 font-bold"
+            disabled={isSubmitting || !isDirty || !isValid}
+          >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Gerar
+          </Button>
+        </div>
 
         <small className="text-gray-400">
           Este termo será utilizado para explicar e gerar o vídeo.
@@ -88,13 +115,6 @@ export function FormComponent({ onSubmit }: FormProps) {
             {errors.term.message}
           </p>
         )}
-      </div>
-
-      <div className="w-full flex justify-end">
-        <Button className="w-24" type="submit">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Gerar
-        </Button>
       </div>
     </form>
   );

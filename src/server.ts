@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { videoGenerator } from "./services";
-import { initializeSocket } from "./socket";
+import { initializeSocket } from "./lib/socket";
 import { env } from "./env";
 
 const app = express();

@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import { useIndexedDB } from "react-indexed-db-hook";
-import { Ghost } from "lucide-react";
 
 import { socket } from "@/shared/lib/socket";
-import { VideoProps } from "@/shared/types/Video";
+import { VideoProps, VideoStatusType } from "@/shared/types/Video";
 
 import { Header } from "@/components/header";
 import { CardVideo } from "./card-video";
 import { FormComponent } from "./form";
 
+import { ReactComponent as Background } from "@/assets/background.svg";
+
 type PayloadVideoStatus = {
   id: string;
-  status: string;
+  status: VideoStatusType;
   status_message: string;
 };
 
@@ -72,34 +73,36 @@ export function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <Header />
+    <div className="min-h-screen flex flex-col items-center justify-center py-16">
+      <div className="w-3/5">
+        <Header />
+      </div>
 
-      <div className="w-[60%]">
+      <div className="w-3/5">
         <FormComponent onSubmit={onSubmit} />
       </div>
 
-      <div className="flex flex-col gap-2 w-[60%]">
+      <div className="flex flex-col gap-2 w-3/5">
         <p className="text-black text-md font-bold mt-10">Seus vídeos</p>
 
-        {videos.length === 0 && (
+        {videos?.length === 0 && (
           <div className="flex gap-3 border rounded-md w-full p-12 justify-center items-center">
             <div className="flex flex-col items-center gap-4">
-              <Ghost className="size-20" />
+              <Background className="size-60" />
               <span className="text-base">Nenhum vídeo encontrado</span>
             </div>
           </div>
         )}
 
-        {videos.length > 0 && (
+        {videos?.length > 0 && (
           <div className="flex flex-col gap-2 max-h-[320px] overflow-auto pr-[1px]">
             {videos
-              .sort(
+              ?.sort(
                 (a, b) =>
                   a.term.charAt(0).toLowerCase().charCodeAt(0) -
                   b.term.charAt(0).toLowerCase().charCodeAt(0)
               )
-              .map((video) => (
+              ?.map((video) => (
                 <CardVideo key={video.uuid} videoData={video} />
               ))}
           </div>
