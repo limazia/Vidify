@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import JsFileDownloader from "js-file-downloader";
 
 import { VideoProps } from "@/shared/types/Video";
@@ -24,20 +24,28 @@ export const CardVideo = ({ videoData }: CardVideoProps) => {
           <span className="text-sm text-gray-500">{video.status_message}</span>
         </div>
 
-        {video.status === "finished" && (
-          <button
-            className="cursor-pointer"
-            onClick={() => {
-              new JsFileDownloader({
-                url: `http://localhost:10000/api/download/${video.uuid}`,
-                filename: `${video.uuid}.mp4`,
-                autoStart: true,
-              }).then(() => console.log("File downloaded"));
-            }}
-          >
-            <Download className="size-8" />
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {video.status === "finished" && (
+            <>
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  new JsFileDownloader({
+                    url: `http://localhost:10000/api/download/${video.uuid}`,
+                    filename: `${video.uuid}.mp4`,
+                    autoStart: true,
+                  }).then(() => console.log("File downloaded"));
+                }}
+              >
+                <Download className="size-8" />
+              </button>
+
+              <button className="cursor-pointer">
+                <Trash2 className="size-8 text-red-500" />
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

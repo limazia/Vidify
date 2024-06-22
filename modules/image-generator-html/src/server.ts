@@ -1,11 +1,10 @@
 import express from "express";
 
-import { capture } from "./capture";
+import { capture } from "./services/capture";
 
 const app = express();
-const port = 2000;
+const PORT = 2000;
 
-// Serve arquivos estáticos da pasta 'public'
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
@@ -15,12 +14,12 @@ app.get("/", (req, res) => {
 app.get("/capture", async (req, res) => {
   const paramsDefault = {
     title: "useState",
-    tags: ["tag1", "tag2"],
-    language: "nodejs",
-    username: "novousuario",
+    //tags: ["tag1", "tag2"],
   };
 
   const params = { ...paramsDefault, ...req.query };
+
+  console.log("Params", params)
 
   const png = await capture(params);
 
@@ -29,6 +28,6 @@ app.get("/capture", async (req, res) => {
   res.end(png);
 });
 
-app.listen(port, () => {
-  console.log(`O servidor está rodando na porta ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

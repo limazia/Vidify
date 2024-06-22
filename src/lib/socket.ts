@@ -3,7 +3,7 @@ import { Server as SocketServer } from "socket.io";
 
 let io: SocketServer;
 
-export const initializeSocket = (server: Server) => {
+export function initializeSocket(server: Server) {
   io = new SocketServer(server, {
     cors: {
       origin: "*", // Endereço da sua aplicação frontend
@@ -24,11 +24,12 @@ export const initializeSocket = (server: Server) => {
   io.listen(4000);
 
   return io;
-};
+}
 
-export const getIO = () => {
+export function getIO() {
   if (!io) {
     throw new Error("Socket.io não foi inicializado!");
   }
+
   return io;
-};
+}

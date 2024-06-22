@@ -1,25 +1,24 @@
 import chromium from "chrome-aws-lambda";
 import puppeteer, { BoundingBox } from "puppeteer";
 
-import { formatParams } from "./utils/format-params";
+import { formatParams } from "../utils/format-params";
 
 type ParamsCapture = {
   title: string;
-  tags: string[];
-  language: string;
-  username: string;
+  //tags: string[];
 };
 
 export const capture = async (params: ParamsCapture) => {
-  const browser = await chromium.puppeteer.launch({
+  const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
-    headless: false, // chromium.headless
+    headless: "new",
     ignoreHTTPSErrors: true,
+    ignoreDefaultArgs: ["--disable-extensions"],
   });
 
-  let page = await browser.newPage();
+  const page = await browser.newPage();
 
   const baseUrl = `http://${process.env.HOST ?? "localhost"}:${process.env.PORT ?? 2000}`;
   const query = formatParams(params);
@@ -51,15 +50,13 @@ export const capture = async (params: ParamsCapture) => {
     if (body) body.style.background = "none";
   });
 
-  const pathPng = "meuDiv.png";
-  // Fazendo screenshot do div
-  const pngImage = await page.screenshot({
-    path: pathPng,
+  const image = await page.screenshot({
+    path: "cover.png",
     clip,
     omitBackground: true,
   });
 
   await browser.close();
 
-  return pngImage;
+  return image;
 };

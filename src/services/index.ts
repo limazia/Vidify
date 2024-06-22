@@ -34,7 +34,7 @@ export async function videoGenerator(term: string, id: string) {
   io.emit("video-status", {
     id,
     status: "processing",
-    status_message: "Generating content",
+    status_message: "Gerando conteúdo",
   });
 
   const content = await generateContent({ term });
@@ -76,11 +76,17 @@ export async function videoGenerator(term: string, id: string) {
 
   await buildSubtitle(id);
 
+  console.log("Building cover");
+
+  io.emit("video-status", {
+    id,
+    status: "processing",
+    status_message: "Gerando capa",
+  });
+
   await generateCover({
     id,
     title: content.title,
-    tags: content.tags,
-    username: "limazia",
   });
 
   console.log("Putting all the parts of this video together");

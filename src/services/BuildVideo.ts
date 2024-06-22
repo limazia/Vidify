@@ -60,11 +60,11 @@ export const buildVideo = async (id: string) => {
   const complexFilter = `
     [0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,trim=0:${audioDuration}[tocover];
     [tocover]boxblur=5:5[blurred];
-    [blurred][3:v]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:enable='between(t,0,1)'[coverOverlay];
+    [blurred][2:v]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:enable='between(t,0,1)'[coverOverlay];
     [coverOverlay][2:v]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:enable='gte(t,1.1)'[vidWithImage];
     [vidWithImage]ass='${legenda.replace(/\\/g, "\\\\").replace(":", "\\:")}',setpts=PTS+2/TB[outv];
     [1:a]adelay=2000|2000,aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,aresample=async=1:first_pts=0[finalAudio]
-`.replace(/(\n)/g, "");
+  `.replace(/(\n)/g, "");
 
   const command = `
     ffmpeg -y
