@@ -61,6 +61,9 @@ O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inc
 - **GET** `/api/download/:id`: Baixa o vídeo gerado, onde `:id` é o UUID do vídeo gerado.
 - **GET** `/`: Serve o cliente frontend.
 
+<img src="https://raw.githubusercontent.com/limazia/Vidify/main/examples/response1.png?token=GHSAT0AAAAAACRGAHU2MTNNHVA57COYH3L6ZTZ7Y2Q" width="400px;" alt=""/>
+<img src="https://raw.githubusercontent.com/limazia/Vidify/main/examples/response2.png?token=GHSAT0AAAAAACRGAHU2GPYLVKKNAGJZGG5YZTZ7Y3Q" width="400px;" alt=""/>
+
 ## Desenvolvimento Frontend
 
 O frontend do Vidify foi desenvolvido usando Vite, shadcn/ui, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/`. Para desenvolver localmente, navegue até este diretório e execute `npm i` para instalar as dependências e `npm run dev` para iniciar o servidor de desenvolvimento.
