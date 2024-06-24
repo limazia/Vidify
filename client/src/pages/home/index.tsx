@@ -105,9 +105,10 @@ export function Home() {
 
         {results && results.length === 0 && (
           <div className="flex gap-3 border rounded-md w-full p-12 justify-center items-center">
-            <div className="flex flex-col items-center gap-4">
-              <Background className="size-60" />
-              <span className="text-base">Nenhum vídeo encontrado</span>
+            <div className="flex flex-col items-center text-center gap-4">
+              <Background className="size-48" />
+              <span className="text-base font-bold">Nenhum vídeo encontrado</span>
+              <small className="text-gray-400 w-80">Crie um vídeo agora mesmo digitando um <b>termo</b> e clicando em "<b>Gerar</b>" para adicionar à lista.</small>
             </div>
           </div>
         )}
