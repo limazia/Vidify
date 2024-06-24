@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "Node16",
+    "esModuleInterop": true,  
+    "forceConsistentCasingInFileNames": true, 
+    "strict": true,  
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@services/*": ["./src/services/*"],
+      "@shared/*": ["./src/shared/*"],
+    }
+  },
+  "include": ["src/**/*", "src/shared/types/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
+ 

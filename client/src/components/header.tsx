@@ -1,0 +1,13 @@
+import { ReactComponent as Logo } from "@/assets/logo.svg";
+
+export function Header() {
+  return (
+    <div className="flex items-center text-primary mb-10">
+      <Logo className="size-16" />
+      <span className="text-primary text-3xl tracking-wider">Dark</span>
+      <span className="text-primary text-3xl font-bold tracking-wider">
+        Clip
+      </span>
+    </div>
+  );
+}

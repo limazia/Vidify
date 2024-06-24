@@ -9,7 +9,7 @@ services:
       - CARBONARA_HOST=carbonara
       - IMAGE_GENERATOR_HOST=image-generator
     volumes:
-      - .env:/usr/src/app/.env
+      - ./server/.env:/usr/src/app/server/.env
     networks:
       - video-generator
     depends_on:

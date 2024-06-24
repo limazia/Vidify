@@ -8,7 +8,7 @@ type ParamsCapture = {
   //tags: string[];
 };
 
-export const capture = async (params: ParamsCapture) => {
+export async function capture(params: ParamsCapture) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
@@ -59,4 +59,4 @@ export const capture = async (params: ParamsCapture) => {
   await browser.close();
 
   return image;
-};
+}

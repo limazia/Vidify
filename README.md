@@ -1,6 +1,6 @@
 # DarkClip
 
-O DarkClip é um aplicativo gerador de vídeos que explica frameworks e bibliotecas de Node.js e Python. Ele automatiza a criação de vídeos explicativos sobre como utilizar diferentes frameworks e bibliotecas, gerando código de exemplo, narrando os passos e juntando tudo em um vídeo. Este documento fornecerá um guia passo a passo sobre como configurar e usar o DarkClip.
+O DarkClip é um gerador de vídeos que utiliza inteligência artificial para automatizar a criação de vídeos explicativos. Ele pesquisa o termo que você deseja, cria a narração em áudio, adiciona legendas e uma capa para o vídeo. No documento, você encontrará instruções detalhadas sobre como configurar e usar o DarkClip.
 
 ## Tecnologias Utilizadas
 
@@ -9,7 +9,7 @@ O DarkClip é um aplicativo gerador de vídeos que explica frameworks e bibliote
 - [OpenAI API](https://beta.openai.com/): Para gerar o código, a narração e detalhes da capa do vídeo.
 - [FFmpeg](https://www.ffmpeg.org/): Para juntar todas as partes do vídeo.
 - [Express.js](https://expressjs.com/): Para criar as rotas da API.
-- [Vite](https://vitejs.dev/), [Shadcn](https://shadcn.github.io/), [Tailwind CSS](https://tailwindcss.com/), e [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API): Para desenvolver o frontend.
+- [Vite](https://vitejs.dev/), [shadcn/ui](https://shadcn.github.io/), [Tailwind CSS](https://tailwindcss.com/), e [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API): Para desenvolver o frontend.
 - [Socket.io](https://socket.io/): Para comunicar entre o frontend e o backend durante as etapas de geração do vídeo.
 - [Docker](https://www.docker.com/): Para containerizar a aplicação.
 
@@ -46,15 +46,15 @@ O `docker-compose.yml` define como os serviços do DarkClip são orquestrados. I
 2. Navegue até o diretório raiz do projeto no terminal.
 3. Execute o comando `docker-compose up --build -d` para construir e iniciar todos os serviços definidos no `docker-compose.yml`.
 4. Uma vez que todos os serviços estejam em execução, acesse `http://localhost:10000` em seu navegador para acessar a interface do usuário do DarkClip.
-5. Use a interface do usuário para gerar vídeos, especificando a feature e a linguagem de programação desejada.
+5. Use a interface do usuário para gerar vídeos, especificando o termo desejado.
 
 ## Rotas da API
 
 - **POST** `/api/generate`: Gera um vídeo com base nos parâmetros fornecidos no corpo da requisição.
-  - Corpo da requisição: `{ "feature": "nome_da_feature", "programming_language": "linguagem_de_programação" }`
+  - Corpo da requisição: `{ "term": "termo_desejado" }`
 - **GET** `/api/download/:id`: Baixa o vídeo gerado, onde `:id` é o UUID do vídeo gerado.
 - **GET** `/`: Serve o cliente frontend.
 
 ## Desenvolvimento Frontend
 
-O frontend do DarkClip foi desenvolvido usando Vite, Shadcn, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/front-end`. Para desenvolver localmente, navegue até este diretório e execute `npm i` para instalar as dependências e `npm run dev` para iniciar o servidor de desenvolvimento.
+O frontend do DarkClip foi desenvolvido usando Vite, shadcn/ui, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/front-end`. Para desenvolver localmente, navegue até este diretório e execute `npm i` para instalar as dependências e `npm run dev` para iniciar o servidor de desenvolvimento.

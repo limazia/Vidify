@@ -1,5 +1,3 @@
-node_modules
 results/*
-dist
+server/dist
 modules
-package-lock.json
