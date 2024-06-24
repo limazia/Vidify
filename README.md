@@ -2,6 +2,15 @@
 
 O Vidify é um gerador de vídeos que utiliza inteligência artificial para automatizar a criação de vídeos explicativos. Ele pesquisa o termo que você deseja, cria a narração em áudio, adiciona legendas e uma capa para o vídeo. No documento, você encontrará instruções detalhadas sobre como configurar e usar o Vidify.
 
+**Utilizando o app**
+
+https://github.com/limazia/Vidify/assets/32038004/d7a5c40e-8741-43f2-af72-505edf9a4b68
+
+**Resultado**
+
+https://github.com/limazia/Vidify/assets/32038004/b223299e-7bb7-4408-a58c-58d3d8b3cdad
+
+
 ## Tecnologias Utilizadas
 
 - [Puppeteer](https://pptr.dev/): Para gerar a capa do vídeo e o código do exemplo de uso da feature.
