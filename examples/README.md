@@ -1,4 +1,3 @@
  - `using_app.mp4`: Vídeo demonstrando o uso do aplicativo interagindo com a API e gerando o vídeo.
 - `video_result.mp4` Vídeo gerado pelo aplicativo.
-- `response1.png` Imagem mostrando o retorno do conteúdo da API.
-- `response2.png` Imagem mostrando o retorno do conteúdo do image-generator-html.
+- `response.png` Imagem mostrando o retorno do conteúdo da API.
