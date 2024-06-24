@@ -62,7 +62,6 @@ O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inc
 - **GET** `/`: Serve o cliente frontend.
 
 <img src="https://raw.githubusercontent.com/limazia/Vidify/main/examples/response1.png?token=GHSAT0AAAAAACRGAHU2MTNNHVA57COYH3L6ZTZ7Y2Q" width="400px;" alt=""/>
-<img src="https://raw.githubusercontent.com/limazia/Vidify/main/examples/response2.png?token=GHSAT0AAAAAACRGAHU2GPYLVKKNAGJZGG5YZTZ7Y3Q" width="400px;" alt=""/>
 
 ## Desenvolvimento Frontend
 
