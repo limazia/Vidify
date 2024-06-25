@@ -44,7 +44,7 @@ O `Dockerfile` incluído no projeto define o ambiente necessário para executar 
 
 ### Docker Compose
 
-O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inclui três serviços: `api`, `image-generator`, e `carbonara`. O serviço `api` constrói o contexto atual, expõe as portas necessárias, e define as dependências necessárias. Os serviços `image-generator` e `carbonara` são configurados de maneira semelhante, com o `image-generator` construindo a partir de um subdiretório do projeto.
+O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inclui dois serviços: `api` e `image-generator`. O serviço `api` constrói o contexto atual, expõe as portas necessárias, e define as dependências necessárias. O serviço `image-generator` é configurado de maneira semelhante, com o `image-generator` construindo a partir de um subdiretório do projeto.
 
 ## Executando o Vidify
 
