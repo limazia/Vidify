@@ -7,7 +7,6 @@ const envSchema = z.object({
   AWS_ACCESS_KEY_ID: z.string().min(1),
   AWS_SECRET_ACCESS_KEY: z.string().min(1),
   IMAGE_GENERATOR_HOST: z.string().default("localhost"),
-  CARBONARA_HOST: z.string().default("localhost"),
   PATH_RESULTS: z.string().default("results"),
   PATH_VIDEOS: z.string().default("videos"),
 });
