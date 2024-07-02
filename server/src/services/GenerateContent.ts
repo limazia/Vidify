@@ -2,6 +2,7 @@ import { openai } from "@/shared/lib/openai";
 
 type GenerateContentReturn = {
   title: string;
+  imageQuery: string;
   tags: string[];
   narration: string;
 };
@@ -22,7 +23,7 @@ export async function generateContent({ term }: GenerateContentParams) {
         },
         {
           role: "user",
-          content: `Explain ${term}, its purpose, and provide examples of use. All answers should be in Portuguese and maintain a polite tone, as this content will be used in a social media video. At the end of the explanation, invite viewers to follow for more tips and to leave a comment.`,
+          content: `Explain "${term}", its purpose, and provide examples of use. All answers should be in Portuguese and maintain a polite tone, as this content will be used in a social media video. At the end of the explanation, invite viewers to follow for more tips and to leave a comment.`,
         },
       ],
       functions: [
@@ -35,6 +36,10 @@ export async function generateContent({ term }: GenerateContentParams) {
               title: {
                 type: "string",
                 description: "title of term to be explained. Only one word",
+              },
+              imageQuery: {
+                type: "string",
+                description: "give me back a word of the term and search so I can do an image search",
               },
               tags: {
                 type: "array",

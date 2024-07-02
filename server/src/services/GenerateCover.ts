@@ -12,15 +12,12 @@ type GenerateCover = {
 export async function generateCover(params: GenerateCover) {
   const { id, title } = params;
 
-  const URL = `http://${env.IMAGE_GENERATOR_HOST}:2000`;
-  const dataParams = { title };
-
   try {
-    const response = await axios.get(`${URL}/capture`, {
+    const response = await axios.get(`${env.APP_HOST}/api/cover`, {
       headers: {
         "Content-Type": "application/json",
       },
-      params: dataParams,
+      params: { id, title },
       responseType: "arraybuffer",
     });
 

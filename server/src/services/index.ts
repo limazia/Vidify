@@ -2,17 +2,13 @@ import fs from "fs/promises";
 
 import { SpeechBase } from "@/shared/types/SpeechBase";
 import { getIO } from "@/shared/lib/socket";
-import {
-  getNumberFilesFolder,
-  replaceWordsToSpeechLanguageSSML,
-  resultsPath,
-  videosPath,
-} from "@/shared/utils";
+import { replaceWordsToSpeechLanguageSSML, resultsPath } from "@/shared/utils";
 
 import { buildSubtitle } from "./BuildSubtitle";
 import { buildVideo } from "./BuildVideo";
 import { generateAudio } from "./GenerateAudio";
 import { generateContent } from "./GenerateContent";
+import { generateImages } from "./GenerateImages";
 import { generateCover } from "./GenerateCover";
 import { generateSubtitle } from "./GenerateSubtitles";
 
@@ -26,12 +22,6 @@ export async function videoGenerator(term: string, id: string) {
     TextType: "ssml",
     VoiceId: "Thiago",
   };
-
-  const totalSize = getNumberFilesFolder(videosPath);
-
-  console.log("totalSize: ", totalSize);
-  console.log("videosPath: ", videosPath);
-  console.log("resultsPath: ", resultsPath);
 
   const dir = `${resultsPath}/${id}`;
 
@@ -50,12 +40,14 @@ export async function videoGenerator(term: string, id: string) {
   const content = await generateContent({ term });
 
   if (!content) {
+    console.log("Content not generated");
+    
     io.emit("video-status", {
       id,
       status: "error",
       status_message: "Conteúdo não gerado",
     });
-    console.log("Content not generated");
+    
     return null;
   }
 
@@ -85,6 +77,19 @@ export async function videoGenerator(term: string, id: string) {
   });
 
   await buildSubtitle(id);
+
+  console.log("Downloading images");
+
+  io.emit("video-status", {
+    id,
+    status: "processing",
+    status_message: "Baixando imagens",
+  });
+
+  await generateImages({
+    query: content.imageQuery,
+    id,
+  });
 
   console.log("Building cover");
 

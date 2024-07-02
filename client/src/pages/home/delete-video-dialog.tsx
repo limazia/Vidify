@@ -42,9 +42,6 @@ export function DeleteVideoDialog({ videoId }: DeleteVideoDialogProps) {
       });
       toast.success("Vídeo excluído com sucesso.");
     },
-    onError: () => {
-      toast.error("Ah! Algo deu errado.");
-    },
   });
 
   async function handleDelete() {

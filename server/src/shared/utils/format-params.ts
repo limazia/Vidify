@@ -2,15 +2,7 @@ type Params = {
   [key: string]: string | number | boolean | Array<string | number | boolean>;
 };
 
-export interface Mark {
-  time: number;
-  type: string;
-  start: number;
-  end: number;
-  value: string;
-}
-
-export async function formatParams(params: Params) {
+export function formatParams(params: Params) {
   return (
     "?" +
     Object.entries(params)

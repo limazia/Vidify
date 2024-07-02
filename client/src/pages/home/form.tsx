@@ -1,7 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Loader2, Plus } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import { z } from "zod";
 
 import { api } from "@/shared/lib/api";
@@ -31,6 +33,12 @@ type FormProps = {
 };
 
 export function FormComponent({ onSubmit }: FormProps) {
+  const [titleRandom, setTitleRandom] = useState("");
+
+  useEffect(() => {
+    setTitleRandom(suggestions[Math.floor(Math.random() * suggestions.length)]);
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -52,16 +60,13 @@ export function FormComponent({ onSubmit }: FormProps) {
       term: data.term,
       status: "pending",
       status_message: "Seu vídeo será processado em breve",
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     reset();
 
     onSubmit(dbData);
   }
-
-  const titleRandom =
-    suggestions[Math.floor(Math.random() * suggestions.length)];
 
   return (
     <form onSubmit={handleSubmit(handleCreateVideo)} className="space-y-4">

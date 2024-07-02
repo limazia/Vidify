@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "dom"],
     "module": "Node16",
     "esModuleInterop": true,  
     "forceConsistentCasingInFileNames": true, 
@@ -11,8 +11,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@services/*": ["./src/services/*"],
-      "@shared/*": ["./src/shared/*"],
     }
   },
   "include": ["src/**/*", "src/shared/types/**/*"],

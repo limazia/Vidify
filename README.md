@@ -10,11 +10,11 @@ https://github.com/limazia/Vidify/assets/32038004/d7a5c40e-8741-43f2-af72-505edf
 
 https://github.com/limazia/Vidify/assets/32038004/b223299e-7bb7-4408-a58c-58d3d8b3cdad
 
-
 ## Tecnologias Utilizadas
 
 - [Puppeteer](https://pptr.dev/): Para gerar a capa do vídeo e o código do exemplo de uso da feature.
 - [AWS Polly](https://aws.amazon.com/polly/): Para gerar a narração do vídeo.
+- [Unsplash](https://unsplash.com/): Para pegar imagens relacionada ao termo.
 - [OpenAI API](https://beta.openai.com/): Para gerar o código, a narração e detalhes da capa do vídeo.
 - [FFmpeg](https://www.ffmpeg.org/): Para juntar todas as partes do vídeo.
 - [Express.js](https://expressjs.com/): Para criar as rotas da API.
@@ -26,7 +26,7 @@ https://github.com/limazia/Vidify/assets/32038004/b223299e-7bb7-4408-a58c-58d3d8
 
 ### Variáveis de Ambiente
 
-Crie um arquivo chamado `.env` na pasta `server/` do seu projeto, seguindo o formato fornecido no arquivo `.env.example`.
+Crie um arquivo chamado `.env` na pasta `raiz` do seu projeto, seguindo o formato fornecido no arquivo `.env.example`.
 
 ```env
 # OpenAi
@@ -36,6 +36,9 @@ OPENAI_API_KEY=your_openai_api_key
 AWS_REGION="us-east-1" 
 AWS_ACCESS_KEY_ID=your_aws_access_key_id 
 AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+
+# Unsplash
+UNSPLASH_API_TOKEN=your_unsplash_api_key
 ```
 
 ### Dockerfile

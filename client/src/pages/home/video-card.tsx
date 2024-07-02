@@ -11,11 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { DeleteVideoDialog } from "./delete-video-dialog";
 
 type CardVideoProps = {
@@ -38,14 +33,9 @@ export function CardVideo({ videoData }: CardVideoProps) {
 
       <div className="flex items-center justify-between w-full">
         <div className="flex flex-col">
-          <Tooltip>
-            <TooltipTrigger>
-              <span className="font-bold">{video.term}</span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{video.uuid}</p>
-            </TooltipContent>
-          </Tooltip>
+          <span className="font-bold" title={video.uuid}>
+            {video.term}
+          </span>
 
           <span className="text-sm text-gray-500">{video.status_message}</span>
         </div>

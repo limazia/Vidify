@@ -1,31 +1,13 @@
 services:
   api:
+    platform: linux/x86_64
     build:
       context: .
     ports:
       - '10000:10000'
       - '4000:4000'
-    environment:
-      - IMAGE_GENERATOR_HOST=image-generator
     volumes:
-      - ./server/.env:/usr/src/app/server/.env
-    networks:
-      - video-generator
-    depends_on:
-      - image-generator
-  image-generator:
-    image: image-generator-html
-    platform: linux/x86_64
-    build:
-      context: ./modules/image-generator-html
-    container_name: img-generator-html
-    environment:
-      - PORT=2000
-      - HOST=img-generator-html
-    ports:
-      - '2000:2000'
-    volumes:
-      - ./modules/image-generator-html/public:/usr/app/public
+      - .env:/usr/src/app/.env
     networks:
       - video-generator
 networks:
