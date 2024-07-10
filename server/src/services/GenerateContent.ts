@@ -1,15 +1,15 @@
 import { openai } from "@/shared/lib/openai";
 
-type GenerateContentReturn = {
+interface GenerateContentReturn {
   title: string;
-  imageQuery: string;
-  tags: string[];
   narration: string;
-};
+  tags: string[];
+  imageQuery: string;
+}
 
-type GenerateContentParams = {
+interface GenerateContentParams {
   term: string;
-};
+}
 
 export async function generateContent({ term }: GenerateContentParams) {
   try {
@@ -37,9 +37,10 @@ export async function generateContent({ term }: GenerateContentParams) {
                 type: "string",
                 description: "title of term to be explained. Only one word",
               },
-              imageQuery: {
+              narration: {
                 type: "string",
-                description: "give me back a word of the term and search so I can do an image search",
+                description:
+                  "Text for tip narration in video. give examples of use. Welcome and explain like a teacher",
               },
               tags: {
                 type: "array",
@@ -49,10 +50,10 @@ export async function generateContent({ term }: GenerateContentParams) {
                   type: "string",
                 },
               },
-              narration: {
+              imageQuery: {
                 type: "string",
                 description:
-                  "Text for tip narration in video. give examples of use. Welcome and explain like a teacher",
+                  "Take the context of the narration and return it to me with a single word image query so that I can search for an image, but I need the context to be 100% accurate and in English.",
               },
             },
           },

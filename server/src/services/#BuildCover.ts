@@ -1,16 +1,16 @@
 import puppeteer, { BoundingBox } from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
-import ejs from "ejs";
-import path from "path";
-import { base64Encode, resultsPath } from "@/shared/utils";
 
-interface BuildCoverParams {
+import { formatParams } from "@/shared/utils";
+import { env } from "@/env";
+
+type ParamsCapture = {
   id: string;
   title: string;
   //tags: string[];
-}
+};
 
-export async function buildCover({ id, title }: BuildCoverParams) {
+export async function buildCover(params: ParamsCapture) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
@@ -20,25 +20,19 @@ export async function buildCover({ id, title }: BuildCoverParams) {
     headless: "new",
   });
 
-  const templateCoverDir = path.join(
-    process.cwd(),
-    "src",
-    "templates",
-    "cover",
-    "index.ejs"
-  );
-  const cover = path.join(resultsPath, id, "cover_background.jpg");
+  const page = await browser.newPage();
 
-  const [page] = await browser.pages();
-  const html = await ejs.renderFile(templateCoverDir, {
-    id,
-    title,
-    cover: base64Encode(cover),
-  });
-  await page.setContent(html);
+  const query = formatParams(params);
+  const url = `${env.APP_HOST}/public/${query}`;
+  
+  console.log("Capture url", url);
 
+  await page.goto(url, { waitUntil: "networkidle0" });
+
+  // O seletor do seu div
   const selector = "#content";
 
+  // Obtendo a área do div
   const clip: BoundingBox | null = await page.evaluate((selector: string) => {
     const element = document.querySelector(selector);
     if (!element) return null;
@@ -46,7 +40,8 @@ export async function buildCover({ id, title }: BuildCoverParams) {
     return { x, y, width, height };
   }, selector);
 
-  if (!clip) throw Error(`Could not find element with selector ${selector}.`);
+  if (!clip)
+    throw Error(`Não consegui encontrar elemento com o seletor ${selector}.`);
 
   await page.evaluate(() => {
     const html = document.querySelector("html");

@@ -1,31 +1,21 @@
-import axios from "axios";
 import Jimp from "jimp";
 
-import { env } from "@/env";
 import { resultsPath } from "@/shared/utils";
+import { buildCover } from "./BuildCover";
 
-type GenerateCover = {
+interface GenerateCover {
   id: string;
   title: string;
-};
+}
 
-export async function generateCover(params: GenerateCover) {
-  const { id, title } = params;
-
+export async function generateCover({ id, title }: GenerateCover) {
   try {
-    const response = await axios.get(`${env.APP_HOST}/api/cover`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      params: { id, title },
-      responseType: "arraybuffer",
+    const png = await buildCover({
+      id,
+      title,
     });
 
-    if (response.status != 200) {
-      throw new Error("API call failed");
-    }
-
-    const cover = await Jimp.read(Buffer.from(response.data));
+    const cover = await Jimp.read(Buffer.from(png));
 
     cover.write(`${resultsPath}/${id}/cover.png`);
   } catch (error) {

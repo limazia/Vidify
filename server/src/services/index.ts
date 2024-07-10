@@ -2,7 +2,11 @@ import fs from "fs/promises";
 
 import { SpeechBase } from "@/shared/types/SpeechBase";
 import { getIO } from "@/shared/lib/socket";
-import { replaceWordsToSpeechLanguageSSML, resultsPath } from "@/shared/utils";
+import {
+  base64Encode,
+  replaceWordsToSpeechLanguageSSML,
+  resultsPath,
+} from "@/shared/utils";
 
 import { buildSubtitle } from "./BuildSubtitle";
 import { buildVideo } from "./BuildVideo";
@@ -11,6 +15,7 @@ import { generateContent } from "./GenerateContent";
 import { generateImages } from "./GenerateImages";
 import { generateCover } from "./GenerateCover";
 import { generateSubtitle } from "./GenerateSubtitles";
+import path from "path";
 
 export async function videoGenerator(term: string, id: string) {
   const io = getIO();
@@ -22,8 +27,7 @@ export async function videoGenerator(term: string, id: string) {
     TextType: "ssml",
     VoiceId: "Thiago",
   };
-
-  const dir = `${resultsPath}/${id}`;
+  const dir = path.join(resultsPath, id);
 
   console.log(`Creating directory ${dir}`);
 
@@ -41,13 +45,13 @@ export async function videoGenerator(term: string, id: string) {
 
   if (!content) {
     console.log("Content not generated");
-    
+
     io.emit("video-status", {
       id,
       status: "error",
       status_message: "Conteúdo não gerado",
     });
-    
+
     return null;
   }
 
@@ -116,8 +120,11 @@ export async function videoGenerator(term: string, id: string) {
 
   console.log("Video generated");
 
+  const cover = base64Encode(`${dir}/cover_background.jpg`);
+
   io.emit("video-status", {
     id,
+    cover,
     status: "finished",
     status_message: "Seu vídeo foi gerado",
   });
