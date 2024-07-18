@@ -43,7 +43,7 @@ UNSPLASH_API_TOKEN=your_unsplash_api_key
 
 ### Dockerfile
 
-O `Dockerfile` incluído no projeto define o ambiente necessário para executar o Vidify. Ele começa com uma imagem base do Node.js, instala o FFmpeg, copia o código fonte do projeto para a imagem e constrói o frontend e a API antes de expor a porta 10000 para comunicação.
+O `Dockerfile` incluído no projeto define o ambiente necessário para executar o Vidify. Ele começa com uma imagem base do Node.js, instala o FFmpeg, copia o código fonte do projeto para a imagem e constrói o `frontend` e a `api` antes de expor a porta `10000` para comunicação.
 
 ### Docker Compose
 
