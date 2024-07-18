@@ -69,11 +69,3 @@ O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inc
 ## Desenvolvimento Frontend
 
 O frontend do Vidify foi desenvolvido usando Vite, shadcn/ui, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/`. Para desenvolver localmente, navegue até este diretório e execute `npm i` para instalar as dependências e `npm run dev` para iniciar o servidor de desenvolvimento.
-
-## Autores
- 
-<table>
-  <tr>
-    <td align="center"><a href="https://www.limazia.dev/"><img src="https://avatars.githubusercontent.com/u/32038004?v=4" width="100px;" alt=""/><br /><sub><b>Acacio de Lima</b></sub></a></td>
-  </tr>
-</table>
