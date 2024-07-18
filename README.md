@@ -4,11 +4,11 @@ O Vidify é um gerador de vídeos que utiliza inteligência artificial para auto
 
 **Utilizando o app**
 
-
+https://github.com/user-attachments/assets/f9ccbea0-631e-485b-9080-d93f0517107f
 
 **Resultado**
 
-
+https://github.com/user-attachments/assets/b3264b8e-d9d1-4df1-ba03-57ef7f87e4a6
 
 ## Tecnologias Utilizadas
 
