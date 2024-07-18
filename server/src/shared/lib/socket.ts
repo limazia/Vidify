@@ -6,7 +6,7 @@ let io: SocketServer;
 export function initializeSocket(server: Server) {
   io = new SocketServer(server, {
     cors: {
-      origin: "*", // Endereço da sua aplicação frontend
+      origin: "*",
       methods: ["GET", "POST"],
       allowedHeaders: "*",
       credentials: true,
@@ -14,10 +14,10 @@ export function initializeSocket(server: Server) {
   });
 
   io.on("connection", (socket) => {
-    console.log("Usuário conectado:", socket.id);
+    console.log("User connected:", socket.id);
 
     socket.on("disconnect", () => {
-      console.log("Usuário desconectado:", socket.id);
+      console.log("User disconnected:", socket.id);
     });
   });
 
@@ -28,7 +28,7 @@ export function initializeSocket(server: Server) {
 
 export function getIO() {
   if (!io) {
-    throw new Error("Socket.io não foi inicializado!");
+    throw new Error("Socket.io has not been initialized!");
   }
 
   return io;

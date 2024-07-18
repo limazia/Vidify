@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Plus } from "lucide-react";
+import { FileTerminal, X, Loader2, Hammer, RotateCw } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,18 +12,9 @@ import { suggestions } from "./suggestions";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-const TERM_MIN_LENGTH = 5;
 
 const formSchema = z.object({
-  term: z
-    .string({
-      message: "Preencha com um termo",
-    })
-    .min(TERM_MIN_LENGTH, {
-      message: `O termo deve ter pelo menos ${TERM_MIN_LENGTH} caracteres.`,
-    }),
+  term: z.string().min(5),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -43,13 +34,15 @@ export function FormComponent({ onSubmit }: FormProps) {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting, isDirty, isValid },
+    setValue,
+    watch,
+    trigger,
+    formState: { isSubmitting, isDirty, isValid },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      term: "",
-    },
   });
+
+  const termValue = watch("term");
 
   async function handleCreateVideo(data: FormSchema) {
     const response = await api.post("/generate", data);
@@ -58,6 +51,7 @@ export function FormComponent({ onSubmit }: FormProps) {
     const dbData: VideoProps = {
       uuid: video_id,
       term: data.term,
+      cover: "",
       status: "pending",
       status_message: "Seu vídeo será processado em breve",
       created_at: new Date().toISOString(),
@@ -68,44 +62,75 @@ export function FormComponent({ onSubmit }: FormProps) {
     onSubmit(dbData);
   }
 
+  function handleSuggestionClick() {
+    setValue("term", titleRandom, { shouldDirty: true });
+    trigger();
+  }
+
+  function handleClear() {
+    setValue("term", "", { shouldDirty: true });
+    trigger();
+  }
+
+  function handleRefreshClick() {
+    setTitleRandom(suggestions[Math.floor(Math.random() * suggestions.length)]);
+  }
+
   return (
     <form onSubmit={handleSubmit(handleCreateVideo)} className="space-y-4">
-      <div className="flex flex-col space-y-2">
-        <Label htmlFor="term" className="font-bold">
-          Termo
-        </Label>
+      <div className="flex group flex-col">
+        <div className="w-full h-[50px] flex items-center px-4 rounded-md border border-gray-300 disabled:cursor-not-allowed  disabled:opacity-50 focus-within:border-gray-400 focus:border-gray-400 transition duration-500 ease-linear">
+          <FileTerminal className="w-5 h-5 text-gray-500 transition duration-500 ease-linear" />
 
-        <div className="flex gap-5">
           <Input
-            id="term"
-            className="w-full"
-            placeholder={`Ex: ${titleRandom}`}
+            className="bg-transparent border-none font-normal text-gray-500 focus:border-gray-400 shadow-none outline-none focus:outline-none focus-visible:ring-0"
+            placeholder="Digite seu prompt aqui"
             disabled={isSubmitting}
             {...register("term")}
           />
 
-          <Button
-            type="submit"
-            className="w-40 font-bold"
-            disabled={isSubmitting || !isDirty || !isValid}
-          >
-            {isSubmitting ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Plus className="mr-2 size-4" />
+          <div className="flex items-center gap-2">
+            {termValue && (
+              <Button
+                variant="link"
+                className="px-0"
+                onClick={handleClear}
+              >
+                <X className="size-4" />
+              </Button>
             )}
-            Gerar
-          </Button>
+
+            <Button
+              type="submit"
+              variant="link"
+              className="px-0"
+              disabled={isSubmitting || !isDirty || !isValid}
+            >
+              {isSubmitting ? (
+                <Loader2 className="size-6 animate-spin" />
+              ) : (
+                <Hammer className="size-6" />
+              )}
+            </Button>
+          </div>
         </div>
 
-        <small className="text-gray-400">
-          Este termo será utilizado para explicar e gerar o vídeo.
-        </small>
+        {!termValue && (
+          <div className="flex items-center gap-2 cursor-pointer">
+            <Button
+              variant="link"
+              className="px-0"
+              onClick={handleRefreshClick}
+            >
+              <RotateCw className="w-4 h-4" />
+            </Button>
 
-        {errors.term && (
-          <p className="text-sm font-medium text-red-500 dark:text-red-400">
-            {errors.term.message}
-          </p>
+            <div className="w-full" onClick={handleSuggestionClick}>
+              <p className="truncate w-[840px] text-gray-600 font-medium">
+                {titleRandom}
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </form>

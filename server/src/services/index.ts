@@ -2,11 +2,7 @@ import fs from "fs/promises";
 
 import { SpeechBase } from "@/shared/types/SpeechBase";
 import { getIO } from "@/shared/lib/socket";
-import {
-  base64Encode,
-  replaceWordsToSpeechLanguageSSML,
-  resultsPath,
-} from "@/shared/utils";
+import { base64Encode, resultsPath } from "@/shared/utils";
 
 import { buildSubtitle } from "./BuildSubtitle";
 import { buildVideo } from "./BuildVideo";
@@ -56,8 +52,7 @@ export async function videoGenerator(term: string, id: string) {
   }
 
   const textWithoutSSML = content.narration.replace(/(')|(`)/g, "");
-  let text = `<speak><prosody rate="fast">${textWithoutSSML}</prosody></speak>`;
-  text = replaceWordsToSpeechLanguageSSML(text, "en-US");
+  const text = `<speak><prosody rate="fast">${textWithoutSSML}</prosody></speak>`;
 
   console.log("Generating audio and subtitle");
 

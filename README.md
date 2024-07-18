@@ -4,11 +4,11 @@ O Vidify é um gerador de vídeos que utiliza inteligência artificial para auto
 
 **Utilizando o app**
 
-https://github.com/limazia/Vidify/assets/32038004/d7a5c40e-8741-43f2-af72-505edf9a4b68
+
 
 **Resultado**
 
-https://github.com/limazia/Vidify/assets/32038004/b223299e-7bb7-4408-a58c-58d3d8b3cdad
+
 
 ## Tecnologias Utilizadas
 
@@ -47,7 +47,7 @@ O `Dockerfile` incluído no projeto define o ambiente necessário para executar 
 
 ### Docker Compose
 
-O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inclui dois serviços: `api` e `image-generator`. O serviço `api` constrói o contexto atual, expõe as portas necessárias, e define as dependências necessárias. O serviço `image-generator` é configurado de maneira semelhante, com o `image-generator` construindo a partir de um subdiretório do projeto.
+O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inclui o serviço `api`. O serviço `api` constrói o contexto atual, expõe as portas necessárias, e define as dependências necessárias.
 
 ## Executando o Vidify
 
@@ -71,12 +71,9 @@ O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inc
 O frontend do Vidify foi desenvolvido usando Vite, shadcn/ui, Tailwind CSS, e IndexedDB. Você pode encontrar os arquivos de origem no diretório `client/`. Para desenvolver localmente, navegue até este diretório e execute `npm i` para instalar as dependências e `npm run dev` para iniciar o servidor de desenvolvimento.
 
 ## Autores
-
-O Vidify é uma evolução do projeto original, [Tik-Tech by @ViniciusSantos45](https://github.com/viniciussantos45/tik-tech), que incorpora melhorias significativas para aumentar sua eficácia e funcionalidade.
  
 <table>
   <tr>
     <td align="center"><a href="https://www.limazia.dev/"><img src="https://avatars.githubusercontent.com/u/32038004?v=4" width="100px;" alt=""/><br /><sub><b>Acacio de Lima</b></sub></a></td>
-    <td align="center"><a href="https://github.com/viniciussantos45"><img src="https://avatars.githubusercontent.com/u/47752947?v=4" width="100px;" alt=""/><br /><sub><b>Vinicius Gomes</b></sub></a></td>
   </tr>
 </table>
