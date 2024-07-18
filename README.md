@@ -59,10 +59,11 @@ O `docker-compose.yml` define como os serviços do Vidify são orquestrados. Inc
 
 ## Rotas da API
 
+- **GET** `/`: Serve o cliente frontend.
+- **GET** `/api/download/:id`: Baixa o vídeo gerado, onde `:id` é o UUID do vídeo gerado.
 - **POST** `/api/generate`: Gera um vídeo com base nos parâmetros fornecidos no corpo da requisição.
   - Corpo da requisição: `{ "term": "termo_desejado" }`
-- **GET** `/api/download/:id`: Baixa o vídeo gerado, onde `:id` é o UUID do vídeo gerado.
-- **GET** `/`: Serve o cliente frontend.
+- **DELETE** `/api/delete/:id`: Deleta o vídeo gerado pela `:id`.
 
 <img src="https://raw.githubusercontent.com/limazia/Vidify/main/examples/response1.png?token=GHSAT0AAAAAACRGAHU2MTNNHVA57COYH3L6ZTZ7Y2Q" width="400px;" alt=""/>
 
