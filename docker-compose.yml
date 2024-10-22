@@ -1,15 +1,55 @@
+name: "mendigo-chato"
+
 services:
-  api:
-    platform: linux/x86_64
-    build:
-      context: .
+  nginx:
+    image: nginx:latest
+    container_name: nginx
     ports:
-      - '10000:10000'
-      - '4000:4000'
+      - "80:80"
     volumes:
-      - .env:/usr/src/app/.env
-    networks:
-      - video-generator
-networks:
-  video-generator:
-    driver: bridge
+      - ./frontend:/usr/share/nginx/html:ro 
+      - ./nginx/default.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    volumes:
+      - ./backend/.env:/usr/src/app/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3000 
+      - DATABASE_URL=postgresql://camino:9V6QP86lVVGLIHbbWtbvpHL5sRf7ge0hcXgTODlrwg@pg:5432/clearvault
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - pg
+      - redis
+    ports:
+      - "3000:3000"
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  pg:
+    image: bitnami/postgresql:latest
+    container_name: pg
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=camino
+      - POSTGRES_PASSWORD=9V6QP86lVVGLIHbbWtbvpHL5sRf7ge0hcXgTODlrwg
+      - POSTGRES_DB=clearvault
+    volumes:
+      - postgres_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docker"]
+      interval: 10s
+      retries: 5
+
+volumes:
+  postgres_data:

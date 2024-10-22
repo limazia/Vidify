@@ -1,0 +1,15 @@
+services:
+  api:
+    platform: linux/x86_64
+    build:
+      context: .
+    ports:
+      - '10000:10000'
+      - '4000:4000'
+    volumes:
+      - .env:/usr/src/app/.env
+    networks:
+      - video-generator
+networks:
+  video-generator:
+    driver: bridge
