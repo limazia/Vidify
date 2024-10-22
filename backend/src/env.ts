@@ -1,11 +1,28 @@
+import { join } from "node:path";
+import { config } from "dotenv";
 import { z } from "zod";
-import dotenv from "dotenv";
-import path from "node:path";
 
-dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+config({
+  path: join(process.cwd(), ".env"),
+});
 
 const envSchema = z.object({
-  APP_HOST: z.string().default("http://localhost:10000"),
+  NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
+  HOST: z.string().url(),
+  PORT: z.coerce.number().default(3333),
+
+  DATABASE_URL: z
+    .string({
+      invalid_type_error: "DATABASE_URL must be a string",
+      required_error: "Missing DATABASE_URL in environment variables",
+    })
+    .url(),
+  REDIS_URL: z
+    .string({
+      invalid_type_error: "REDIS_URL must be a string",
+      required_error: "Missing REDIS_URL in environment variables",
+    })
+    .url(),
 
   OPENAI_API_KEY: z.string().min(1),
 
@@ -15,8 +32,6 @@ const envSchema = z.object({
 
   UNSPLASH_API_URL: z.string().min(1),
   UNSPLASH_API_TOKEN: z.string().min(1),
-
-  PATH_RESULTS: z.string().default("results"),
 });
 
 export const env = envSchema.parse(process.env);
