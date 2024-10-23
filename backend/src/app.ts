@@ -8,10 +8,6 @@ connection
     console.log(`🌎 Environment: ${env.NODE_ENV}`);
     console.log("📦 Successfully connected to the database!");
 
-    await import("@/app/schedulers/index.js").then(() => {
-      console.log("🕛 Cronjob has started successfully!");
-    });
-
     server.listen(env.PORT, "0.0.0.0", () => {
       console.log(`🚀 Server is running on port: ${env.PORT}`);
     });
