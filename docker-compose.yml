@@ -21,7 +21,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000 
-      - DATABASE_URL=postgresql://camino:9V6QP86lVVGLIHbbWtbvpHL5sRf7ge0hcXgTODlrwg@pg:5432/clearvault
+      - DATABASE_URL=postgresql://viddy:L4ILcP86PHY4mzKe7IWOVhX3R0Eqvb1eM5EUpVyHCbOcv@pg:5432/vidify
       - REDIS_URL=redis://redis:6379
     depends_on:
       - pg
@@ -41,9 +41,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=camino
-      - POSTGRES_PASSWORD=9V6QP86lVVGLIHbbWtbvpHL5sRf7ge0hcXgTODlrwg
-      - POSTGRES_DB=clearvault
+      - POSTGRES_USER=viddy
+      - POSTGRES_PASSWORD=L4ILcP86PHY4mzKe7IWOVhX3R0Eqvb1eM5EUpVyHCbOcv
+      - POSTGRES_DB=vidify
     volumes:
       - postgres_data:/bitnami/postgresql
     healthcheck:
