@@ -1,0 +1,17 @@
+<%- include("./partials/header") %>
+<div id="content" class="inline-block border-[10px] bg-none">
+  <div class="relative overflow-hidden z-[1] rounded-[50px]">
+    <div
+      class="relative flex flex-col items-center justify-center py-[50px] px-[10px] m-[30px] bg-cover bg-center bg-image w-[1080px] h-[1920px] bg-[url('<%= cover %>')]"
+    >
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-transparent to-black"
+      ></div>
+      <span
+        class="relative font-bold text-[5rem] tracking-[-1.5px] uppercase m-0 text-center text-white"
+        ><%= title %></span
+      >
+    </div>
+  </div>
+</div>
+<%- include("./partials/footer") %>
