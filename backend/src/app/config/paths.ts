@@ -1,3 +1,5 @@
 import { join } from "node:path";
 
-export const resultsPath = join(process.cwd(), "tmp");
+export const paths = {
+  results: join(process.cwd(), "tmp"),
+};

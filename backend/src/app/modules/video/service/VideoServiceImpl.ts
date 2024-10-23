@@ -3,12 +3,12 @@ import { Response } from "express";
 
 import { VideoService } from "../interface/VideoService";
 
-import { resultsPath } from "@/app/config/paths";
+import { paths } from "@/app/config/paths";
 import { AppError } from "@/http/errors/app-error";
 
 export class VideoServiceImpl implements VideoService {
   downloadVideo(id: string, response: Response): void {
-    const videoFilePath = `${resultsPath}/${id}/output_final_video.mp4`;
+    const videoFilePath = `${paths.results}/${id}/output_final_video.mp4`;
 
     if (!fs.existsSync(videoFilePath)) {
       throw new AppError("Video not found");
@@ -22,7 +22,7 @@ export class VideoServiceImpl implements VideoService {
   }
 
   deleteVideo(id: string, response: Response): void {
-    const dir = `${resultsPath}/${id}`;
+    const dir = `${paths.results}/${id}`;
 
     fs.rm(dir, { recursive: true, force: true }, (err) => {
       if (err) {

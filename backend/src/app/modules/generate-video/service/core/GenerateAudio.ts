@@ -7,7 +7,7 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 import { SpeechBase } from "@/types/SpeechBase";
 import { polly, s3 } from "@/app/lib/aws";
-import { resultsPath } from "@/app/config/paths";
+import { paths } from "@/app/config/paths";
  
 
 type GenerateAudio = {
@@ -48,7 +48,7 @@ export async function generateAudio({ text, id, config }: GenerateAudio) {
       const audioWebStream =
         (await s3response.Body.transformToByteArray()) as Buffer;
 
-      const filePath = `${resultsPath}/${id}/audio.mp3`;
+      const filePath = `${paths.results}/${id}/audio.mp3`;
 
       await fs.writeFile(filePath, Buffer.from(audioWebStream));
     } catch (err) {

@@ -3,15 +3,15 @@ import { promisify } from "util";
 import path from "path";
 
 import { getMediaDuration } from "@/app/utils";
-import { resultsPath } from "@/app/config/paths";
+import { paths } from "@/app/config/paths";
 
 const exec = promisify(execCallback);
 
 export async function buildVideo(id: string) {
-  const audio = path.join(resultsPath, id, "audio.mp3");
-  const subtitle = path.join(resultsPath, id, "captions.ass");
-  const cover = path.join(resultsPath, id, "cover.png");
-  const outputFinalVideo = path.join(resultsPath, id, "output_final_video.mp4");
+  const audio = path.join(paths.results, id, "audio.mp3");
+  const subtitle = path.join(paths.results, id, "captions.ass");
+  const cover = path.join(paths.results, id, "cover.png");
+  const outputFinalVideo = path.join(paths.results, id, "output_final_video.mp4");
 
   const audioDuration = await getMediaDuration(audio);
 

@@ -2,7 +2,7 @@ import { exec as execCallback } from "child_process";
 import fs from "fs/promises";
 import { promisify } from "node:util";
 
-import { resultsPath } from "@/app/config/paths";
+import { paths } from "@/app/config/paths";
 import { Mark } from "@/types/Mark";
 
 const { parse, stringify } = require("ass-compiler");
@@ -108,17 +108,17 @@ export async function styleFontAss(filePath: string) {
 }
 
 export async function buildSubtitle(id: string) {
-  const filePathMarks = `${resultsPath}/${id}/subtitles.marks`;
+  const filePathMarks = `${paths.results}/${id}/subtitles.marks`;
 
   const marks = await getMarks(filePathMarks);
 
   const captions = createCaptions(marks);
 
-  await fs.writeFile(`${resultsPath}/${id}/captions.srt`, captions);
+  await fs.writeFile(`${paths.results}/${id}/captions.srt`, captions);
 
-  const outputAss = `${resultsPath}/${id}/captions.ass`;
+  const outputAss = `${paths.results}/${id}/captions.ass`;
 
-  await exec(`ffmpeg -i ${resultsPath}/${id}/captions.srt ${outputAss}`);
+  await exec(`ffmpeg -i ${paths.results}/${id}/captions.srt ${outputAss}`);
 
   await styleFontAss(outputAss);
 

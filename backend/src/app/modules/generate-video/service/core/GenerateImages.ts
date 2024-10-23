@@ -3,7 +3,7 @@ import path from "node:path";
  
 import { searchImages } from "@/app/utils/search-images";
 import { downloadImage } from "@/app/utils/download-image";
-import { resultsPath } from "@/app/config/paths";
+import { paths } from "@/app/config/paths";
 
 type GenerateImage = {
   query: string;
@@ -15,7 +15,7 @@ export async function generateImages({ query, id }: GenerateImage) {
     const images = await searchImages({ query });
 
     if (images.length > 0) {
-      const dir = path.join(resultsPath, id);
+      const dir = path.join(paths.results, id);
 
       const img = images[0];
       const imgName = "cover_background.jpg";

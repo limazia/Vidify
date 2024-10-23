@@ -7,7 +7,7 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 import { SpeechBase } from "@/types/SpeechBase";
 import { polly, s3 } from "@/app/lib/aws";
-import { resultsPath } from "@/app/utils";
+import { paths } from "@/app/config/paths";
 
 type GenerateSubtitle = {
   text: string;
@@ -48,7 +48,7 @@ export async function generateSubtitle({ text, id, config }: GenerateSubtitle) {
       const audioWebStream =
         (await s3response.Body.transformToByteArray()) as Buffer;
 
-      const filePath = `${resultsPath}/${id}/subtitles.marks`;
+      const filePath = `${paths.results}/${id}/subtitles.marks`;
 
       await fs.writeFile(filePath, Buffer.from(audioWebStream));
     } catch (err) {

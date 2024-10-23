@@ -12,7 +12,7 @@ import { generateSubtitle } from "./GenerateSubtitles";
 import { SpeechBase } from "@/types/SpeechBase";
 import { getIO } from "@/app/lib/socket";
 import { base64Encode } from "@/app/utils";
-import { resultsPath } from "@/app/config/paths";
+import { paths } from "@/app/config/paths";
 
 export async function videoGenerator(term: string, id: string) {
   const io = getIO();
@@ -23,7 +23,7 @@ export async function videoGenerator(term: string, id: string) {
     TextType: "ssml",
     VoiceId: "Thiago",
   };
-  const dir = path.join(resultsPath, id);
+  const dir = path.join(paths.results, id);
 
   console.log(`Creating directory ${dir}`);
   await fs.mkdir(dir, { recursive: true });
