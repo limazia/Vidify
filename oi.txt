@@ -1,0 +1,3 @@
+https://github.com/fluent-ffmpeg/node-fluent-ffmpeg
+
+https://medium.com/@dilshodshoolimkhon/how-to-use-node-ffmpeg-library-c4c4588c84be
