@@ -1,24 +1,26 @@
 import "./globals.css";
 
-import { initDB } from "react-indexed-db-hook";
+import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 
-import { DBConfig } from "@/shared/lib/db";
 import { queryClient } from "@/shared/lib/react-query";
 
 import { Toastify } from "@/components/toastify";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Home } from "@/pages/home";
 
-initDB(DBConfig);
+import { ClientOnly } from "./components/client-only";
 
+import { router } from "./routes";
+ 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Home />
-        <Toastify autoClose={5000} />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ClientOnly>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <RouterProvider router={router} />
+          <Toastify autoClose={5000} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ClientOnly>
   );
 }
