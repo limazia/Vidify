@@ -1,4 +1,4 @@
-import { Plus, Video, ThumbsUp } from "lucide-react";
+import { Plus, Video } from "lucide-react";
 
 import { NavItemProps } from "@/shared/types/NavItem";
 
@@ -12,10 +12,5 @@ export const NavItems: NavItemProps[] = [
     title: "Videos",
     to: "/videos",
     icon: Video,
-  },
-  {
-    title: "Reconhecimentos",
-    to: "/acknowledgements",
-    icon: ThumbsUp,
   },
 ];
