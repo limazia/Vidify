@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RefreshCw } from "lucide-react";
+
+import { cn } from "@/shared/lib/utils";
+import { categorizedSuggestions } from "./suggestions";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-import { categorizedSuggestions } from "./suggestions";
 
 const getRandomSuggestions = () => {
   return categorizedSuggestions.map((category) => {
@@ -21,9 +22,26 @@ interface CardSuggestionProps {
 
 export function CardSuggestion({ setValue, trigger }: CardSuggestionProps) {
   const [prompts, setPrompts] = useState(getRandomSuggestions);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
-  const refreshPrompts = () => {
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleRefreshPrompts = () => {
+    if (isSpinning) return;
+
+    setIsSpinning(true);
     setPrompts(getRandomSuggestions());
+
+    timeoutRef.current = setTimeout(() => {
+      setIsSpinning(false);
+    }, 500);
   };
 
   return (
@@ -55,9 +73,14 @@ export function CardSuggestion({ setValue, trigger }: CardSuggestionProps) {
       <Button
         variant="link"
         className="px-0 cursor-pointer hover:no-underline text-gray-500"
-        onClick={refreshPrompts}
+        onClick={handleRefreshPrompts}
       >
-        <RefreshCw className="size-4 mr-1.5" />
+        <RefreshCw
+          className={cn(
+            "size-4 mr-1.5",
+            isSpinning && "animate-spin transition ease-linear duration-500"
+          )}
+        />
         Atualizar prompts
       </Button>
     </>

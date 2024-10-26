@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useFormContext } from "react-hook-form";
 import { ArrowRight, Loader2, X, Globe, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 
 //import { VideoProps } from "@/shared/types/Video";
+
+const formSchema = z.object({
+  term: z.string().min(5),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 
 import {
   DropdownMenu,
@@ -20,7 +27,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 const PROMPT_MAX_LENGTH = 600;
- 
 
 // type AIAssistantProps = {
 //   onSubmit: (data: VideoProps) => void;
@@ -32,21 +38,25 @@ const availableModels = [
   { name: "Claude 3", model: "claude", disabled: true },
 ];
 
-export function Form() {
+export function Form({
+  onNavigate,
+  isNavigating,
+}: {
+  onNavigate: (data: FormSchema) => void;
+  isNavigating: boolean;
+}) {
   const [selectedAI, setSelectedAI] = useState("");
   const [openModel, setOpenModel] = useState(false);
 
   const {
     register,
     handleSubmit,
-    reset,
+
     setValue,
     watch,
     trigger,
     formState: { isSubmitting, isDirty, isValid },
-  } = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-  });
+  } = useFormContext<FormSchema>();
 
   const termValue = watch("term");
 
@@ -57,30 +67,19 @@ export function Form() {
     setOpenModel(false);
   };
 
-  async function handleCreateVideo(data: FormSchema) {
-    console.log(data);
-    // const video_id = "asdsad";
-
-    // const dbData: VideoProps = {
-    //   uuid: video_id,
-    //   term: data.term,
-    //   cover: "",
-    //   status: "pending",
-    //   status_message: "Seu vídeo será processado em breve",
-    //   created_at: new Date().toISOString(),
-    // };
-
-    reset();
-    //onSubmit(dbData);
-  }
-
   function handleClear() {
     setValue("term", "", { shouldDirty: true });
     trigger();
   }
 
   return (
-    <form onSubmit={handleSubmit(handleCreateVideo)}>
+    <motion.form
+      onSubmit={handleSubmit(onNavigate)}
+      animate={
+        isNavigating ? { scale: 0.95, opacity: 0 } : { scale: 1, opacity: 1 }
+      }
+      transition={{ duration: 0.5 }}
+    >
       <div className="flex group flex-col space-y-2">
         <div className="w-full flex flex-col items-center rounded-md border border-gray-300 disabled:cursor-not-allowed disabled:opacity-50 focus-within:border-gray-400 focus:border-gray-400 transition duration-500 ease-linear">
           <Textarea
@@ -160,6 +159,6 @@ export function Form() {
           </div>
         </div>
       </div>
-    </form>
+    </motion.form>
   );
 }

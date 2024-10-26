@@ -5,7 +5,7 @@ export function NotFound() {
     <div className="h-screen flex flex-col items-center justify-center">
       <div className="space-y-8 text-center">
         <div className="space-y-2">
-          <h1 className="text-8xl font-medium">404</h1>
+          <h1 className="text-8xl text-black font-medium">404</h1>
           <p className="text-4xl text-black font-bold">
             Essa página não existe.
           </p>

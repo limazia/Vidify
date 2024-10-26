@@ -1,5 +1,9 @@
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
 
 import { CardSuggestion } from "./card-suggestion";
 import { Form } from "./form";
@@ -11,15 +15,29 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export function AIAssistant() {
-  const {
-    reset,
-    setValue,
-    watch,
-    trigger,
-    formState: { isSubmitting, isDirty, isValid },
-  } = useForm<FormSchema>({
+  const [isNavigating, setIsNavigating] = useState(false);
+  const navigate = useNavigate();
+
+  const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      term: "",
+    },
   });
+
+  async function handleCreateVideo(data: FormSchema) {
+    setIsNavigating(true);
+    const chatId = uuidv4();
+
+    // Store the search term in localStorage or state management solution
+    localStorage.setItem(`chat-${chatId}`, data.term);
+
+    // Animate out
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for exit animation
+
+    // Navigate to chat
+    navigate(`/chat/${chatId}`);
+  }
 
   return (
     <div className="w-full space-y-8">
@@ -38,12 +56,12 @@ export function AIAssistant() {
       </div>
 
       <div className="space-y-2">
-        <CardSuggestion setValue={setValue} trigger={trigger} />
+        <CardSuggestion setValue={form.setValue} trigger={form.trigger} />
       </div>
 
       <div className="space-y-2">
-        <FormProvider {...methods}>
-          <Form />
+        <FormProvider {...form}>
+          <Form onNavigate={handleCreateVideo} isNavigating={isNavigating} />
         </FormProvider>
       </div>
     </div>
