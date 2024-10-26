@@ -1,0 +1,65 @@
+import { useState } from "react";
+import { RefreshCw } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+import { categorizedSuggestions } from "./suggestions";
+
+const getRandomSuggestions = () => {
+  return categorizedSuggestions.map((category) => {
+    const randomItem =
+      category.items[Math.floor(Math.random() * category.items.length)];
+    return { name: category.name, icon: category.icon, text: randomItem };
+  });
+};
+
+interface CardSuggestionProps {
+  setValue: (name: "term", value: string, options?: any) => void;
+  trigger: () => void;
+}
+
+export function CardSuggestion({ setValue, trigger }: CardSuggestionProps) {
+  const [prompts, setPrompts] = useState(getRandomSuggestions);
+
+  const refreshPrompts = () => {
+    setPrompts(getRandomSuggestions());
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {prompts.map((prompt, index) => (
+          <Card
+            key={index}
+            className="hover:border-gray-300 transition ease-linear duration-200 cursor-pointer w-full max-w-xs h-40"
+            onClick={() => {
+              setValue("term", prompt.text, { shouldDirty: true });
+              trigger();
+            }}
+          >
+            <CardContent className="p-4 flex flex-col justify-between h-full">
+              <div className="flex flex-col space-y-1">
+                <small className="text-xs text-gray-400">{prompt.name}</small>
+                <span className="text-sm mb-0">{prompt.text}</span>
+              </div>
+
+              <span className="mt-7">
+                <prompt.icon className="size-6 text-gray-400" />
+              </span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Button
+        variant="link"
+        className="px-0 cursor-pointer hover:no-underline text-gray-500"
+        onClick={refreshPrompts}
+      >
+        <RefreshCw className="size-4 mr-1.5" />
+        Atualizar prompts
+      </Button>
+    </>
+  );
+}
