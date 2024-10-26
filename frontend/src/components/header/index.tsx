@@ -14,7 +14,7 @@ export function Header() {
 
         <Link className="flex flex-col" to="/">
           <div className="flex items-center">
-            <span className="text-primary text-2xl tracking-wider">Vidi</span>
+            <span className="text-primary text-2xl font-medium tracking-wider">Vidi</span>
             <span className="text-primary text-2xl font-bold tracking-wider">
               fy
             </span>{" "}
