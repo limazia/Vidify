@@ -7,6 +7,7 @@ connection
   .then(async () => {
     console.log(`🌎 Environment: ${env.NODE_ENV}`);
     console.log("📦 Successfully connected to the database!");
+    console.log(`🍃 Socket.IO is running on port :${env.SOCKET_PORT}`);
 
     server.listen(env.PORT, "0.0.0.0", () => {
       console.log(`🚀 Server is running on port :${env.PORT}`);

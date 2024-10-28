@@ -29,7 +29,6 @@ export function initializeSocket(server: Server) {
   });
 
   io.listen(env.SOCKET_PORT);
-  console.log(`🍃 Socket.IO is running on port :${env.SOCKET_PORT}`);
 
   return io;
 }
