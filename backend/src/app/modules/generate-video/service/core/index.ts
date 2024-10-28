@@ -13,6 +13,7 @@ import { SpeechBase } from "@/types/SpeechBase";
 import { getIO } from "@/app/lib/socket";
 import { base64Encode } from "@/app/utils";
 import { paths } from "@/app/config/paths";
+import { sendVideoEvent } from "./SendEvent";
 
 export async function videoGenerator(term: string, id: string) {
   const io = getIO();
@@ -29,10 +30,11 @@ export async function videoGenerator(term: string, id: string) {
   await fs.mkdir(dir, { recursive: true });
 
   console.log("Generating content");
-  io.emit("video-status", {
-    id,
+  await sendVideoEvent({
+    io,
+    videoId: id,
     status: "processing",
-    status_message: "Gerando conteúdo",
+    message: "Gerando conteúdo"
   });
 
   const content = await generateContent({ term });

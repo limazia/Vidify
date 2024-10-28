@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "Node16",
+    "forceConsistentCasingInFileNames": true, 
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strict": true,  
+    "skipLibCheck": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+    },
+  },
+  "include": ["src/**/*", "src/swagger.json"],
+  "exclude": ["node_modules", "**/*.spec.ts", "build"]
+}

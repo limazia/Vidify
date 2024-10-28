@@ -5,8 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("id").primary().notNullable().unique();
     table.string("term").notNullable();
     table.string("cover");
-    table.string("status");
-    table.string("status_message");
+    table.string("tags");
 
     table.timestamp("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP"));
     table.timestamp("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP"));
