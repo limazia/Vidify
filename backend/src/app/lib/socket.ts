@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { Server } from "http";
 import { Server as SocketServer } from "socket.io";
 
@@ -14,14 +15,21 @@ export function initializeSocket(server: Server) {
   });
 
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
+    console.log("User  connected:", socket.id);
+
+    socket.on("message", (data) => {
+      console.log("Message received:", data);
+
+      socket.broadcast.emit("message", data);
+    });
 
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+      console.log("User  disconnected:", socket.id);
     });
   });
 
-  io.listen(4000);
+  io.listen(env.SOCKET_PORT);
+  console.log(`🍃 Socket.IO listening on port ${env.SOCKET_PORT}`);
 
   return io;
 }

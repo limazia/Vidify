@@ -10,6 +10,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("production"),
   HOST: z.string().url(),
   PORT: z.coerce.number().default(3333),
+  SOCKET_PORT: z.coerce.number().default(4000),
 
   DATABASE_URL: z
     .string({
@@ -24,11 +25,11 @@ const envSchema = z.object({
     })
     .url(),
 
-  OPENAI_API_KEY: z.string().min(1),
-
   AWS_REGION: z.string().min(1),
   AWS_ACCESS_KEY_ID: z.string().min(1),
   AWS_SECRET_ACCESS_KEY: z.string().min(1),
+
+  OPENAI_API_KEY: z.string().min(1),
 
   UNSPLASH_API_URL: z.string().min(1),
   UNSPLASH_API_TOKEN: z.string().min(1),
