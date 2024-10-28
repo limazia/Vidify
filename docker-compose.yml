@@ -1,4 +1,4 @@
-name: "mendigo-chato"
+name: "vidify"
 
 services:
   nginx:
