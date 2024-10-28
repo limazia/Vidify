@@ -29,12 +29,6 @@ export function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    async function fetchMessages() {
-      const response = await fetch(`/api/chat/${id}`);
-      const data = await response.json();
-      setMessages(data.messages);
-    }
-
     function onConnect() {
       console.log("Socket connected");
     }
@@ -43,25 +37,14 @@ export function Chat() {
       console.log("Socket disconnected");
     }
 
-    async function onVideoStatusEvent({
-      id: uuid,
-      cover,
-      status,
-      status_message,
-    }: PayloadVideoStatus) {
-      console.log(uuid, cover, status, status_message);
-
+    async function onVideoStatusEvent({ status_message }: PayloadVideoStatus) {
       const newMessage: Message = {
         sender: "system",
         text: status_message,
         createdAt: new Date().toISOString(),
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-      await saveMessageToDatabase(newMessage);
     }
-
-    fetchMessages();
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
@@ -73,16 +56,6 @@ export function Chat() {
       socket.off("video-status", onVideoStatusEvent);
     };
   }, [id]);
-
-  async function saveMessageToDatabase(message: Message) {
-    await fetch("/api/save-message", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
-  }
 
   return (
     <motion.div
