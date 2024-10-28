@@ -12,7 +12,7 @@
     "knex:migrate:rollback": "npm run knex migrate:rollback",
     "knex:migrate:status": "npm run knex migrate:status",
     "knex:seed:run": "npm run knex seed:run",
-    "compose": "docker-compose -f docker-compose.dev.yaml up --build -d"
+    "compose": "docker compose -f docker-compose.dev.yaml up --build -d"
   },
   "dependencies": {
     "@aws-sdk/client-polly": "^3.370.0",

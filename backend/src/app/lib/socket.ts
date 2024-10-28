@@ -15,7 +15,7 @@ export function initializeSocket(server: Server) {
   });
 
   io.on("connection", (socket) => {
-    console.log("User  connected:", socket.id);
+    console.log("User connected:", socket.id);
 
     socket.on("message", (data) => {
       console.log("Message received:", data);
@@ -24,12 +24,12 @@ export function initializeSocket(server: Server) {
     });
 
     socket.on("disconnect", () => {
-      console.log("User  disconnected:", socket.id);
+      console.log("User disconnected:", socket.id);
     });
   });
 
   io.listen(env.SOCKET_PORT);
-  console.log(`🍃 Socket.IO listening on port ${env.SOCKET_PORT}`);
+  console.log(`🍃 Socket.IO is running on port :${env.SOCKET_PORT}`);
 
   return io;
 }

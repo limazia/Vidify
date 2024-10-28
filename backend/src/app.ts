@@ -9,7 +9,7 @@ connection
     console.log("📦 Successfully connected to the database!");
 
     server.listen(env.PORT, "0.0.0.0", () => {
-      console.log(`🚀 Server is running on port: ${env.PORT}`);
+      console.log(`🚀 Server is running on port :${env.PORT}`);
     });
   })
   .catch(() => {
