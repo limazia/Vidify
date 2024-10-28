@@ -9,6 +9,10 @@ connection
     console.log("📦 Successfully connected to the database!");
     console.log(`🍃 Socket.IO is running on port :${env.SOCKET_PORT}`);
 
+    await import("@/app/queue/workers/index.js").then(() => {
+      console.log("🕛 Queue workers are running!");
+    });
+
     server.listen(env.PORT, "0.0.0.0", () => {
       console.log(`🚀 Server is running on port :${env.PORT}`);
     });

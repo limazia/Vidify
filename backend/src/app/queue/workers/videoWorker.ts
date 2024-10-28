@@ -14,7 +14,7 @@ export const videoWorker = new Worker(
 
       await videoGenerator(term, id);
 
-      return { status: "success", outputPath: job.data.outputPath };
+      return { status: "success" };
     } catch (error) {
       if (error instanceof Error) {
         logger.error(`Erro no processamento: ${error.message}`);

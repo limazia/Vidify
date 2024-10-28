@@ -4,14 +4,12 @@ import { VideoGeneratorService } from "../interface/VideoGeneratorService";
 export class VideoGeneratorServiceImpl implements VideoGeneratorService {
   async generateVideo(term: string, id: string): Promise<void> {
     try {
-      const job = await addVideoJob("video.mp4", {
-        quality: "high",
-        format: "mp4",
-      }, id); 
+      console.log(`Adding video job with ID: ${id} and term: ${term}`);
 
-      console.log(`Job adicionado com ID: ${job.id}`);
+      const job = await addVideoJob(id, term);
+      console.log(`Job added with ID: ${job.id}`);
     } catch (error) {
-      console.error("Erro ao adicionar job:", error);
+      console.error("Error adding job:", error);
     }
   }
 }

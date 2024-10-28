@@ -8,10 +8,10 @@ export async function buildVideo(id: string): Promise<void> {
   const audio = path.join(paths.results, `video_${id}`, "audio.mp3");
   const subtitle = path.join(paths.results, `video_${id}`, "captions.ass");
   const cover = path.join(paths.results, `video_${id}`, "cover.png");
-  const outputFinalVideo = path.join(
+  const finalVideo = path.join(
     paths.results,
     `video_${id}`,
-    "output_final_video.mp4"
+    "final_video.mp4"
   );
 
   // Obtendo a duração do áudio
@@ -57,6 +57,6 @@ export async function buildVideo(id: string): Promise<void> {
         console.error("Erro ao construir vídeo:", err);
         reject(err); // Rejeita a Promise em caso de erro
       })
-      .save(outputFinalVideo); // Salva o vídeo final
+      .save(finalVideo); // Salva o vídeo final
   });
 }

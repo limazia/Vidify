@@ -1,13 +1,11 @@
 import { videoQueue } from "@/app/lib/bullmq";
 
-export async function addVideoJob(id: string, videoPath: string, settings = {}) {
+export async function addVideoJob(id: string, term: string) {
   const job = await videoQueue.add(
     "process-video",
     {
-      videoPath,
-      outputPath: `tmp/video_${id}/final.mp4`,
-      settings,
-      id, 
+      term,
+      id,
     },
     {
       attempts: 3,

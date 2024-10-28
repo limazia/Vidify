@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 
 import { GenerateDTO } from "../dto/GenerateDTO";
 import { VideoGeneratorService } from "../interface/VideoGeneratorService";
+import { AppError } from "@/http/errors/app-error";
 
 export class GenerateController {
   constructor(private readonly videoService: VideoGeneratorService) {}
@@ -12,8 +13,13 @@ export class GenerateController {
 
     const id = uuid();
 
-    this.videoService.generateVideo(term, id);
+    try {
+      this.videoService.generateVideo(term, id);
 
-    response.status(200).json({ id, term });
+      response.status(200).json({ id, term });
+    } catch (error) {
+      //console.error("Error generating video:", error);
+      throw new AppError("Internal Server Error");
+    }
   }
 }
