@@ -3,7 +3,7 @@ import { useIndexedDB } from "react-indexed-db-hook";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { api } from "@/shared/lib/api";
+import { api } from "@/shared/lib/axios";
 
 import {
   AlertDialogContent,

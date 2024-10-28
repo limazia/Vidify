@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { RefreshCw } from "lucide-react";
 
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 import { categorizedSuggestions } from "./suggestions";
 
 import { Card, CardContent } from "@/components/ui/card";

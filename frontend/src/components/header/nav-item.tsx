@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 import { NavItemProps } from "@/shared/types/NavItem";
 
 export function NavItem({ title = "", to = "", icon: Icon }: NavItemProps) {

@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
+import { useMutation } from "@tanstack/react-query";
+
+import { generateVideo } from "@/shared/http/generate-video";
 
 import { CardSuggestion } from "./card-suggestion";
 import { Form } from "./form";
@@ -25,18 +27,26 @@ export function AIAssistant() {
     },
   });
 
+  const { mutateAsync: generateVideoFn } = useMutation({
+    mutationFn: generateVideo,
+    onSuccess: (data) => {
+      const chatId = data.id;
+
+      if (chatId) {
+        navigate(`/chat/${chatId}`);
+      }
+    },
+    onError: (error) => {
+      console.error("Error creating video:", error);
+    },
+  });
+
   async function handleCreateVideo(data: FormSchema) {
     setIsNavigating(true);
-    const chatId = uuidv4();
 
-    // Store the search term in localStorage or state management solution
-    localStorage.setItem(`chat-${chatId}`, data.term);
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Animate out
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for exit animation
-
-    // Navigate to chat
-    navigate(`/chat/${chatId}`);
+    await generateVideoFn(data);
   }
 
   return (

@@ -1,14 +1,88 @@
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+
+import { socket } from "@/shared/lib/socket";
+import { VideoStatusType } from "@/shared/types/Video";
 
 import { Logo } from "@/components/logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TypingAnimation } from "@/components/ui/typing-animation";
 
+interface PayloadVideoStatus {
+  id: string;
+  cover: string;
+  status: VideoStatusType;
+  status_message: string;
+  created_at: string;
+}
+
+interface Message {
+  sender: "user" | "system";
+  text: string;
+  createdAt: string;
+}
+
 export function Chat() {
   const { id } = useParams();
-  const searchTerm = localStorage.getItem(`chat-${id}`);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    async function fetchMessages() {
+      const response = await fetch(`/api/chat/${id}`);
+      const data = await response.json();
+      setMessages(data.messages);
+    }
+
+    function onConnect() {
+      console.log("Socket connected");
+    }
+
+    function onDisconnect() {
+      console.log("Socket disconnected");
+    }
+
+    async function onVideoStatusEvent({
+      id: uuid,
+      cover,
+      status,
+      status_message,
+    }: PayloadVideoStatus) {
+      console.log(uuid, cover, status, status_message);
+
+      const newMessage: Message = {
+        sender: "system",
+        text: status_message,
+        createdAt: new Date().toISOString(),
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+      await saveMessageToDatabase(newMessage);
+    }
+
+    fetchMessages();
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("video-status", onVideoStatusEvent);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("video-status", onVideoStatusEvent);
+    };
+  }, [id]);
+
+  async function saveMessageToDatabase(message: Message) {
+    await fetch("/api/save-message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  }
 
   return (
     <motion.div
@@ -24,23 +98,25 @@ export function Chat() {
               <div className="flex flex-row-reverse items-start space-x-2">
                 <div className="max-w-[80%] p-2 rounded-lg bg-primary text-primary-foreground break-words">
                   <p className="text-sm font-semibold mb-1">Você</p>
-                  <p className="sm">{searchTerm}</p>
+                  <p className="sm">aaaaaaa</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-start mb-4">
-              <div className="flex flex-row items-start space-x-2">
-                <Logo />
-                <div className="max-w-[80%] p-2 rounded-lg bg-primary text-primary-foreground break-words">
-                  <p className="text-sm font-semibold mb-1">Vidify</p>
-                  <TypingAnimation
-                    className="text-sm text-white"
-                    text="Typing Animation"
-                  />
+            {messages.map((message, index) => (
+              <div key={index} className="flex justify-start mb-4">
+                <div className="flex flex-row items-start space-x-2">
+                  <Logo />
+                  <div className="max-w-[80%] p-2 rounded-lg bg-primary text-primary-foreground break-words">
+                    <p className="text-sm font-semibold mb-1">Vidify</p>
+                    <TypingAnimation
+                      className="text-sm text-white"
+                      text={message.text}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </ScrollArea>
           <div className="flex gap-2"></div>
         </CardContent>

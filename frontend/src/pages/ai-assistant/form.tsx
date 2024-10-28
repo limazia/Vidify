@@ -4,8 +4,6 @@ import { useFormContext } from "react-hook-form";
 import { ArrowRight, Loader2, X, Globe, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
-//import { VideoProps } from "@/shared/types/Video";
-
 const formSchema = z.object({
   term: z.string().min(5),
 });
@@ -24,13 +22,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/utils/cn";
 
 const PROMPT_MAX_LENGTH = 600;
-
-// type AIAssistantProps = {
-//   onSubmit: (data: VideoProps) => void;
-// };
 
 const availableModels = [
   { name: "ChatGPT 3.5 Turbo", model: "gpt-turbo" },
@@ -51,7 +45,6 @@ export function Form({
   const {
     register,
     handleSubmit,
-
     setValue,
     watch,
     trigger,
