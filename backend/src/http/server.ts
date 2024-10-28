@@ -1,24 +1,26 @@
 import "express-async-errors";
+import { Server } from "node:http";
 import express, { Request, Response, NextFunction } from "express";
-import path from "node:path";
-import http from "node:http";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
+
+import swaggerFile from "./swagger.json";
 
 import { initializeSocket } from "@/app/lib/socket";
 import { AppError } from "@/http/errors/app-error";
 import { routes } from "./routes";
-
-import swaggerFile from "./swagger.json";
+import { paths } from "@/app/config/paths";
 
 const app = express();
-export const server = http.createServer(app);
+export const server = new Server(app);
 
+// Inicializa o Socket.IO
 initializeSocket(server);
 
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use("/results", express.static(path.resolve(process.cwd(), "tmp")));
+app.use("/results", express.static(paths.results));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(routes);
 
@@ -36,7 +38,7 @@ app.use(
       });
     }
 
-    console.log(error.message);
+    console.error("Internal Server Error:", error.message);
 
     return response.status(500).json({
       statusCode: 500,
