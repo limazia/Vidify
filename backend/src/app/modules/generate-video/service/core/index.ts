@@ -23,7 +23,7 @@ export async function videoGenerator(term: string, id: string) {
     TextType: "ssml",
     VoiceId: "Thiago",
   };
-  const dir = path.join(paths.results, id);
+  const dir = path.join(paths.results, `video_${id}`);
 
   console.log(`Creating directory ${dir}`);
   await fs.mkdir(dir, { recursive: true });

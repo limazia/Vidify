@@ -1,42 +1,62 @@
-import { exec as execCallback } from "child_process";
-import { promisify } from "util";
+import ffmpeg from "fluent-ffmpeg";
 import path from "path";
 
 import { getMediaDuration } from "@/app/utils";
 import { paths } from "@/app/config/paths";
 
-const exec = promisify(execCallback);
+export async function buildVideo(id: string): Promise<void> {
+  const audio = path.join(paths.results, `video_${id}`, "audio.mp3");
+  const subtitle = path.join(paths.results, `video_${id}`, "captions.ass");
+  const cover = path.join(paths.results, `video_${id}`, "cover.png");
+  const outputFinalVideo = path.join(
+    paths.results,
+    `video_${id}`,
+    "output_final_video.mp4"
+  );
 
-export async function buildVideo(id: string) {
-  const audio = path.join(paths.results, id, "audio.mp3");
-  const subtitle = path.join(paths.results, id, "captions.ass");
-  const cover = path.join(paths.results, id, "cover.png");
-  const outputFinalVideo = path.join(paths.results, id, "output_final_video.mp4");
-
+  // Obtendo a duração do áudio
   const audioDuration = await getMediaDuration(audio);
 
-  const complexFilter = `
-    [0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=5:5[blurred];
-    [blurred][0:v]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2,trim=0:${audioDuration}[coverOverlay];
-    [coverOverlay]ass='${subtitle
-      .replace(/\\/g, "\\\\")
-      .replace(":", "\\:")}',setpts=PTS+2/TB[outv];
-    [1:a]adelay=2000|2000,aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,aresample=async=1:first_pts=0[finalAudio]
-  `.replace(/(\n)/g, "");
-
-  const command = `
-    ffmpeg -y
-    -loop 1
-    -i "${cover}"
-    -i "${audio}"
-    -filter_complex "${complexFilter.trim()}"
-    -map "[outv]"
-    -map "[finalAudio]"
-    -vcodec libx264
-    -preset ultrafast
-    -acodec aac
-    ${outputFinalVideo}
-`.replace(/(\n)/g, "");
-
-  await exec(command);
+  return new Promise((resolve, reject) => {
+    ffmpeg()
+      .input(cover)
+      .loop(1) // Loop da imagem de capa
+      .input(audio)
+      .audioFilter(`adelay=2000|2000`) // Atraso no áudio
+      .videoFilter(
+        `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=5:5`
+      ) // Filtros de vídeo
+      .complexFilter([
+        {
+          filter: "overlay",
+          options: {
+            x: "(main_w-overlay_w)/2",
+            y: "(main_h-overlay_h)/2",
+          },
+        },
+        {
+          filter: "ass",
+          options: {
+            filename: subtitle.replace(/\\/g, "\\\\").replace(":", "\\:"),
+          },
+        },
+      ])
+      .outputOptions([
+        `-map 0:v`,
+        `-map 1:a`,
+        `-vcodec libx264`,
+        `-preset ultrafast`,
+        `-acodec aac`,
+        `-t ${audioDuration}`, // Adiciona a duração do áudio como limite para o vídeo
+      ])
+      .on("end", () => {
+        console.log("Vídeo finalizado com sucesso");
+        resolve(); // Resolve a Promise quando a operação é concluída
+      })
+      .on("error", (err) => {
+        console.error("Erro ao construir vídeo:", err);
+        reject(err); // Rejeita a Promise em caso de erro
+      })
+      .save(outputFinalVideo); // Salva o vídeo final
+  });
 }

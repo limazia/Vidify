@@ -14,6 +14,6 @@ export class GenerateController {
 
     this.videoService.generateVideo(term, id);
 
-    response.status(200).json({ video_id: id });
+    response.status(200).json({ id, term });
   }
 }
