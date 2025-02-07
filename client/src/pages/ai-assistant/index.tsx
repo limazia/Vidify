@@ -8,7 +8,7 @@ import qs from "qs";
 
 import { generateVideo } from "@/shared/http/generate-video";
 
-import { CardSuggestion } from "./card-suggestion";
+import { SuggestionCard } from "./suggestion-card";
 import { Form } from "./form";
 
 const formSchema = z.object({
@@ -70,7 +70,7 @@ export function AIAssistant() {
       </div>
 
       <div className="space-y-2">
-        <CardSuggestion setValue={form.setValue} trigger={form.trigger} />
+        <SuggestionCard setValue={form.setValue} trigger={form.trigger} />
       </div>
 
       <div className="space-y-2">

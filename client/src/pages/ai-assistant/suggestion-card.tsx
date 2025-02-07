@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { RefreshCw } from "lucide-react";
 
 import { cn } from "@/shared/utils/cn";
-import { categorizedSuggestions } from "./suggestions";
-
+import { categorizedSuggestions } from "@/shared/suggestions";
+ 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -20,7 +20,7 @@ interface CardSuggestionProps {
   trigger: () => void;
 }
 
-export function CardSuggestion({ setValue, trigger }: CardSuggestionProps) {
+export function SuggestionCard({ setValue, trigger }: CardSuggestionProps) {
   const [prompts, setPrompts] = useState(getRandomSuggestions);
   const [isSpinning, setIsSpinning] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout>();

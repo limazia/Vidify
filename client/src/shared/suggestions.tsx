@@ -1,5 +1,5 @@
-import { Rocket, Trees, Brain, Globe } from "lucide-react";
 import { ElementType } from "react";
+import { Rocket, Trees, Brain, Globe } from "lucide-react";
 
 interface Category {
   name: string;

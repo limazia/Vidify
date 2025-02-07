@@ -1,12 +1,15 @@
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
-import { VideoStatusType } from "@/shared/types/Video";
+import { VideoStatusType } from "@/shared/interfaces/Video";
 
-const statusIconMap: Record<VideoStatusType, JSX.Element> = {
-  pending: <Loader2 className="size-10 animate-spin text-primary" />,
-  processing: <Loader2 className="size-10 animate-spin text-primary" />,
-  error: <XCircle className="size-10 text-red-500" />,
-  finished: <CheckCircle2 className="size-10 text-green-500" />,
+const statusIconMap: Record<
+  VideoStatusType,
+  React.ComponentType<React.SVGProps<SVGSVGElement>>
+> = {
+  pending: Loader2,
+  processing: Loader2,
+  error: XCircle,
+  finished: CheckCircle2,
 };
 
 interface VideoStatusProps {

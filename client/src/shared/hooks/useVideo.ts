@@ -1,28 +1,46 @@
-import { useIndexedDB } from "react-indexed-db-hook";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 
-import { VideoProps } from "../types/Video";
+import { getVideos } from "../http/get-videos";
 
-export const useVideo = () => {
-  const { getAll, add, update } = useIndexedDB("videos");
+export function useVideos() {
+  const [searchParams, _] = useSearchParams();
 
-  async function loadVideos() {
-    const videos = await getAll();
+  const query = searchParams.get("query") ?? "";
+  const sortOrder = searchParams.get("sort_order") ?? "alphabetical";
+  const itemsPerPage = z.coerce
+    .number()
+    .transform((per_page) => Math.max(per_page, 1))
+    .parse(searchParams.get("items_per_page") ?? "10");
 
-    return videos;
-  }
+  const pageIndex = z.coerce
+    .number()
+    .transform((page) => Math.max(page, 1))
+    .parse(searchParams.get("page") ?? "1");
 
-  const { data: results, isLoading } = useQuery<VideoProps[]>({
-    queryKey: ["videos"],
+  const {
+    data: videos,
+    isLoading: isLoadingVideos,
+    isFetching: isFetchingVideos,
+    isError: isErrorVideos,
+  } = useQuery({
+    queryKey: ["videos", query, pageIndex, itemsPerPage, sortOrder],
+    queryFn: () =>
+      getVideos({
+        query,
+        pageIndex,
+        itemsPerPage,
+        sortOrder,
+      }),
     refetchOnWindowFocus: false,
-    queryFn: loadVideos,
+    retry: false,
   });
 
   return {
-    results,
-    isLoading,
-    getAll,
-    add,
-    update,
+    videos,
+    isLoadingVideos,
+    isFetchingVideos,
+    isErrorVideos,
   };
-};
+}

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import { socket } from "@/shared/lib/socket";
-import { VideoStatusType } from "@/shared/types/Video";
+import { VideoStatusType } from "@/shared/interfaces/Video";
 
 import { Logo } from "@/components/logo";
 import { Card, CardContent } from "@/components/ui/card";

@@ -1,15 +1,19 @@
 import { Plus, Video } from "lucide-react";
 
-import { NavItemProps } from "@/shared/types/NavItem";
+interface NavItemProps {
+  title: string;
+  to: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
 
 export const NavItems: NavItemProps[] = [
   {
     to: "/",
-    title: "Novo Video",
+    title: "Novo Vídeo",
     icon: Plus,
   },
   {
-    title: "Videos",
+    title: "Vídeos",
     to: "/videos",
     icon: Video,
   },
