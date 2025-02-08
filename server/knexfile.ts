@@ -1,10 +1,11 @@
 import type { Knex } from "knex";
 
-import { env } from "@/env";
+import { env } from "@/shared/config/env";
 
 const database: { [key: string]: Knex.Config } = {
   development: {
-    client: "pg",
+    //client: "pg",
+    client: "mysql",
     connection: env.DATABASE_URL,
     pool: {
       min: 2,

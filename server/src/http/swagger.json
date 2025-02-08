@@ -1,19 +1,25 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Vidify",
+    "title": "Vidify API",
     "version": "1.0.0",
-    "description": "Documentação da API do Vidify"
+    "description": ""
   },
   "host": "localhost:3000",
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://localhost"
     }
   ],
   "basePath": "/",
+  "tags": [
+    {
+      "name": "Video"
+    }
+  ],
   "schemes": [
-    "http"
+    "http",
+    "https"
   ],
   "paths": {
     "/": {
@@ -26,19 +32,77 @@
         }
       }
     },
-    "/api/generate": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/download/{id}": {
+    "/videos": {
       "get": {
+        "tags": [
+          "Video"
+        ],
         "description": "",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/video": {
+      "post": {
+        "tags": [
+          "Video"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "term": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/video/{id}/download": {
+      "get": {
+        "tags": [
+          "Video"
+        ],
+        "description": "",
+        "produces": [
+          "video/mp4"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -54,8 +118,11 @@
         }
       }
     },
-    "/api/delete/{id}": {
+    "/video/{id}": {
       "delete": {
+        "tags": [
+          "Video"
+        ],
         "description": "",
         "parameters": [
           {
@@ -66,8 +133,8 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
           }
         }
       }

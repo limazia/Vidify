@@ -1,23 +1,10 @@
-import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { z } from "zod";
 
-import { getVideos } from "../http/get-videos";
+import { getVideos } from "@/shared/http/get-videos";
+import { useFilter } from "./useFilter";
 
 export function useVideos() {
-  const [searchParams, _] = useSearchParams();
-
-  const query = searchParams.get("query") ?? "";
-  const sortOrder = searchParams.get("sort_order") ?? "alphabetical";
-  const itemsPerPage = z.coerce
-    .number()
-    .transform((per_page) => Math.max(per_page, 1))
-    .parse(searchParams.get("items_per_page") ?? "10");
-
-  const pageIndex = z.coerce
-    .number()
-    .transform((page) => Math.max(page, 1))
-    .parse(searchParams.get("page") ?? "1");
+  const { query, sortOrder, itemsPerPage, pageIndex } = useFilter();
 
   const {
     data: videos,

@@ -1,20 +1,19 @@
 import { Router, Request, Response } from "express";
 
-import { env } from "@/env";
+import { env } from "@/shared/config/env";
 
-import { generateController } from "@/core/generate-video";
-import { videoController } from "@/core/video";
+import { videoController } from "@/core/video/video.controller";
 
 export const routes = Router();
 
 routes.get("/", (request: Request, response: Response) => {
-  return response.json({
+  response.json({
     name: "Vidify",
     environment: env.NODE_ENV,
   });
 });
 
-routes.post("/api/generate", generateController.generate);
-
-routes.get("/api/download/:id", videoController.download);
-routes.delete("/api/delete/:id", videoController.delete);
+routes.get("/videos", videoController.index);
+routes.post("/video", videoController.store);
+routes.get("/video/:id/download", videoController.download);
+routes.delete("/video/:id", videoController.delete);

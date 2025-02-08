@@ -15,10 +15,10 @@ export interface GetVideosResponse {
 }
 
 export interface GetVideosParams {
-  query?: string | null;
-  pageIndex?: number | null;
-  itemsPerPage?: number | null;
-  sortOrder?: string | null;
+  query?: string | number | null;
+  pageIndex?: string | number | null;
+  itemsPerPage?: string | number | null;
+  sortOrder?: string | number | null;
 }
 
 export async function getVideos({

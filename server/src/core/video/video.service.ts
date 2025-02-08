@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import { v4 as uuid } from "uuid";
 
 import { HttpError } from "@/http/errors/http-error";
-import { paths } from "@/app/config/paths";
-import { ListParams, ListVideoResponse } from "@/types/video";
+import { paths } from "@/shared/config/paths";
+import { ListParams, ListVideoResponse, Video } from "@/shared/types/video";
 import { connection } from "@/database";
 
 class VideoService {
@@ -13,125 +14,118 @@ class VideoService {
     perPage,
     sortOrder,
   }: ListParams): Promise<ListVideoResponse> {
-    const offset = (page - 1) * perPage;
+    const [total, videos] = await Promise.all([
+      connection("videos")
+        .leftJoin("video_files", "videos.id", "video_files.id_video")
+        .leftJoin("videos_status", "videos.id", "videos_status.id_video")
+        .where(
+          connection.raw("LOWER(videos.term) LIKE ?", [
+            `%${query.toLowerCase()}%`,
+          ])
+        )
+        .orWhere(
+          connection.raw("LOWER(videos.tags) LIKE ?", [
+            `%${query.toLowerCase()}%`,
+          ])
+        )
+        .count("* as total")
+        .first(),
+      connection("videos")
+        .leftJoin("video_files", "videos.id", "video_files.id_video")
+        .leftJoin("videos_status", "videos.id", "videos_status.id_video")
+        .where(
+          connection.raw("LOWER(videos.term) LIKE ?", [
+            `%${query.toLowerCase()}%`,
+          ])
+        )
+        .orWhere(
+          connection.raw("LOWER(videos.tags) LIKE ?", [
+            `%${query.toLowerCase()}%`,
+          ])
+        )
+        .select(
+          "videos.id",
+          "videos.term",
+          "videos.tags",
+          "video_files.cover_url",
+          "video_files.video_url",
+          "video_files.width",
+          "video_files.height",
+          "video_files.size",
+          "video_files.type",
+          "videos_status.status",
+          "videos_status.status_message",
+          "videos.updated_at",
+          "videos.created_at"
+        )
+        .orderBy("videos.created_at", sortOrder)
+        .offset((page - 1) * perPage)
+        .limit(perPage),
+    ]);
 
-    const baseQuery = connection("videos as v")
-      .leftJoin("video_files as vf", "v.id", "vf.id_video")
-      .leftJoin("videos_status as vs", "v.id", "vs.id_video")
-      .where((builder) => {
-        if (query) {
-          builder
-            .where("v.term", "ilike", `%${query}%`)
-            .orWhere("v.tags", "ilike", `%${query}%`);
-        }
-      });
+    const totalCount = Number(total?.total || 0);
 
-    // Get total count for pagination
-    const [{ count }] = await baseQuery.clone().count();
-
-    // Get paginated results with all related data
-    const results = await baseQuery
-      .select([
-        // Video fields
-        "v.id as video_id",
-        "v.term",
-        "v.cover",
-        "v.tags",
-        "v.updated_at as video_updated_at",
-        "v.created_at as video_created_at",
-        // Video files fields
-        "vf.id as file_id",
-        "vf.cover_url",
-        "vf.video_url",
-        "vf.width",
-        "vf.height",
-        "vf.size",
-        "vf.type",
-        // Video status fields
-        "vs.id as status_id",
-        "vs.status",
-        "vs.status_message",
-      ])
-      .orderBy(
-        (() => {
-          switch (sortOrder) {
-            case "newest":
-              return "v.created_at";
-            case "oldest":
-              return "v.created_at";
-            default:
-              return "v.term";
+    const videoData: Video[] = videos.map((v) => ({
+      id: v.id,
+      term: v.term,
+      tags: v.tags ? v.tags.split(",").map((tag: string) => tag.trim()) : [],
+      ...(v.status === "completed"
+        ? {
+            file: {
+              cover_url: v.cover_url || null,
+              video_url: v.video_url || null,
+              width: v.width || null,
+              height: v.height || null,
+              size: v.size || null,
+              type: v.type || null,
+            },
           }
-        })(),
-        sortOrder === "oldest" ? "asc" : "desc"
-      )
-      .limit(perPage)
-      .offset(offset);
-
-    // Group and transform the results
-    const videos = results.reduce<Record<string, ListVideoResponse>>((acc, row) => {
-      if (!acc[row.video_id]) {
-        acc[row.video_id] = {
-          id: row.video_id,
-          term: row.term,
-          cover: row.cover,
-          tags: row.tags?.split(","),
-          files: [],
-          status: {
-            id: row.status_id,
-            status: row.status,
-            status_message: row.status_message,
-          },
-          updated_at: row.video_updated_at,
-          created_at: row.video_created_at,
-        };
-      }
-
-      if (row.file_id) {
-        const fileExists = acc[row.video_id].files.some(
-          (file) => file.id === row.file_id
-        );
-
-        if (!fileExists) {
-          acc[row.video_id].files.push({
-            id: row.file_id,
-            cover_url: row.cover_url,
-            video_url: row.video_url,
-            width: row.width,
-            height: row.height,
-            size: row.size,
-            type: row.type,
-          });
-        }
-      }
-
-      return acc;
-    }, {});
+        : {}),
+      status: {
+        state: v.status,
+        status_message: v.status_message || null,
+      },
+      updated_at: new Date(v.updated_at),
+      created_at: new Date(v.created_at),
+    }));
 
     return {
-      data: Object.values(videos),
+      data: videoData,
       pagination: {
-        total: Number(count),
-        per_page: perPage,
-        current_page: page,
-        total_pages: Math.ceil(Number(count) / perPage),
+        total: totalCount,
+        per_page: Number(perPage),
+        current_page: Number(page),
+        total_pages: Math.ceil(totalCount / Number(perPage)),
       },
     };
   }
 
-  async generate(term: string, id: string): Promise<string> {
-    const videoFilePath = path.join(
-      paths.results,
-      id,
-      "output_final_video.mp4"
-    );
+  async generate(term: string): Promise<{ id: string }> {
+    const videoId = uuid();
 
-    try {
-      await fs.promises.access(videoFilePath);
-      return videoFilePath;
-    } catch {
-      throw new HttpError("Video not found");
-    }
+    await connection.transaction(async (trx) => {
+      await trx("videos").insert({
+        id: videoId,
+        term,
+      });
+
+      await trx("video_files").insert({
+        id: uuid(),
+        id_video: videoId,
+      });
+
+      await trx("videos_status").insert({
+        id: uuid(),
+        status: "pending",
+        id_video: videoId,
+      });
+
+      trx.commit;
+    });
+
+    return {
+      id: videoId,
+    };
   }
 
   async delete(id: string): Promise<void> {

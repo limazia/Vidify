@@ -5,10 +5,10 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import { createServer } from "http";
 
-import { initializeSocket } from "@/app/lib/socket";
+import { initializeSocket } from "@/shared/lib/socket";
 import { HttpError } from "@/http/errors/http-error";
 import { routes } from "./routes";
-import { paths } from "@/app/config/paths";
+import { paths } from "@/shared/config/paths";
 import swaggerFile from "./swagger.json";
 
 const app = express();
@@ -32,7 +32,7 @@ app.use(
     if (error instanceof HttpError) {
       console.log(error.message);
 
-      return response.status(error.statusCode).json({
+      response.status(error.statusCode).json({
         success: false,
         error: {
           statusCode: error.statusCode,
@@ -46,7 +46,7 @@ app.use(
 
     console.log(error.message);
 
-    return response.status(500).json({
+    response.status(500).json({
       success: false,
       error: {
         statusCode: 500,

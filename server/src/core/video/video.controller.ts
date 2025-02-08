@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import { v4 as uuid } from "uuid";
 import fs from "node:fs";
 
 import { videoService } from "./video.service";
 
-export class VideoController {
+class VideoController {
   async index(request: Request, response: Response) {
     // #swagger.tags = ['Video']
 
@@ -28,11 +27,10 @@ export class VideoController {
   async store(request: Request, response: Response) {
     // #swagger.tags = ['Video']
     const { term } = request.body;
-    const id = uuid();
 
-    await videoService.generate(term, id);
+    const { id } = await videoService.generate(term);
 
-    response.status(200).json({ id, term });
+    response.status(200).json({ id });
   }
 
   async delete(request: Request, response: Response) {
@@ -57,3 +55,5 @@ export class VideoController {
     stream.pipe(response);
   }
 }
+
+export const videoController = new VideoController();

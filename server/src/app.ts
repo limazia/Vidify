@@ -1,17 +1,21 @@
 import { server } from "@/http/server";
+import { env } from "@/shared/config/env";
 import { connection } from "@/database";
-import { env } from "@/env";
 
 connection
   .raw("SELECT 1")
   .then(async () => {
     console.log(`🌎 Environment: ${env.NODE_ENV}`);
     console.log("📦 Successfully connected to the database!");
-    console.log(`🍃 Socket.IO is running on port :${env.SOCKET_PORT}`);
+    console.log(`🍃 Socket.IO is running on port :${env.PORT}`);
 
-    await import("@/app/queue/workers/index.js").then(() => {
-      console.log("🕛 Queue workers are running!");
-    });
+    if (env.NODE_ENV === "development") {
+      console.log(`📄 Access the documentation on ${env.HOST}:${env.PORT}/docs`);
+    }
+
+    // await import("@/shared/queue/workers/index.js").then(() => {
+    //   console.log("🕛 Queue workers are running!");
+    // });
 
     server.listen(env.PORT, () => {
       console.log(`🚀 Server is running on port :${env.PORT}`);

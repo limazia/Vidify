@@ -8,7 +8,7 @@ export interface GenerateVideoRequest {
 export async function generateVideo(payload: {
   term: string;
 }): Promise<GenerateVideoRequest> {
-  const { data } = await api.post("/generate", payload);
+  const { data } = await api.post("/video", payload);
 
   return data;
 }

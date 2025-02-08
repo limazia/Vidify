@@ -1,9 +1,11 @@
+import { useLocation } from "react-router-dom";
 import { Download, Trash2 } from "lucide-react";
 import JsFileDownloader from "js-file-downloader";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
-import { VideoProps } from "@/shared/interfaces/video";
+import { formatDate } from "@/shared/utils/format-date";
+import { Video } from "@/shared/interfaces/video";
+
+import Placeholder from "@/assets/placeholder.svg?react";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,85 +13,73 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { VideoStatus } from "./video-status";
 import { VideoDeleteDialog } from "./video-delete-dialog";
-
-import Placeholder from "@/assets/placeholder.svg?react";
+import { cn } from "@/shared/utils/cn";
 
 interface VideoCardProps {
-  videoData: VideoProps;
+  video: Video;
 }
 
-export function VideoCard({ videoData }: VideoCardProps) {
-  const video = videoData;
+export function VideoCard({ video }: VideoCardProps) {
+  const { search } = useLocation();
 
-  function handleDeleteClick(e: React.MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation();
-  }
+  const params = new URLSearchParams(search);
+  const videoId = params.get("video");
 
   return (
     <Dialog>
-      <Card className="w-full rounded-md overflow-hidden shadow-md mt-3">
-        <div className="relative flex items-center justify-center">
-          {video.status === "finished" ? (
-            <>
-              {video.cover ? (
-                <>
-                  <div
-                    className="w-full h-48 object-cover bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${video.cover})`,
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
-                </>
-              ) : (
-                <Placeholder className="w-full h-48 rounded-b-none" />
-              )}
-            </>
-          ) : (
-            <>
-              <Skeleton className="w-full h-48 rounded-b-none" />
-
-              <div className="absolute">
-                <VideoStatus status={video.status} />
+      <Card className={cn("w-full rounded-md", videoId === video.id && "border-gray-500")}>
+        <div className="relative flex items-center justify-center rounded-md">
+          {video.status.state === "finished" ? (
+            video.file?.cover_url ? (
+              <div
+                className="relative w-full h-48 bg-cover bg-center"
+                style={{ backgroundImage: `url(${video.file.cover_url})` }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
               </div>
-            </>
+            ) : (
+              <Placeholder className="w-full h-48 rounded-b-none" />
+            )
+          ) : (
+            <div className="relative w-full h-48">
+              <Skeleton className="w-full h-full rounded-b-none" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <VideoStatus status={video.status.state} />
+              </div>
+            </div>
           )}
 
-          {video.status !== "finished" && (
+          {video?.status?.state !== "finished" && (
             <div className="w-full absolute left-4 top-4 flex flex-col">
               <span className="font-semibold text-gray-500 text-xs uppercase">
                 Na fila
               </span>
               <span className="mt-4 absolute text-gray-500 text-xs">
-                {video.status_message}
+                {video?.status?.message}
               </span>
             </div>
           )}
         </div>
         <CardContent className="p-4 space-y-3">
           <div className="mt-3 space-y-2">
-            <CardTitle className="text-md font-bold" title={video.uuid}>
+            <CardTitle className="text-md font-bold" title={video.id}>
               {video.term}
             </CardTitle>
 
             <span className="text-gray-500 text-xs">
-              Criado{" "}
-              {formatDistanceToNow(new Date(video.created_at), {
-                locale: ptBR,
-                addSuffix: true,
-              })}
+              {formatDate(video?.created_at)}
             </span>
           </div>
 
           <div className="w-full flex items-center gap-2">
             <Button
               size="lg"
-              disabled={video.status !== "finished"}
+              disabled={video?.status?.state !== "finished"}
               className="w-full px-3 flex items-center"
               onClick={() => {
                 new JsFileDownloader({
-                  url: `http://localhost:10000/api/download/${video.uuid}`,
-                  filename: `${video.uuid}.mp4`,
+                  url: `http://localhost:4000/video/${video.id}/download`,
+                  filename: `${video.id}.mp4`,
                   autoStart: true,
                 }).then(() => console.log("File downloaded"));
               }}
@@ -101,9 +91,8 @@ export function VideoCard({ videoData }: VideoCardProps) {
             <DialogTrigger asChild>
               <Button
                 variant="link"
-                disabled={video.status !== "finished"}
+                disabled={video?.status?.state !== "finished"}
                 className="w-full flex items-center cursor-pointer text-red-500 hover:no-underline"
-                onClick={handleDeleteClick}
               >
                 <Trash2 className="w-5 h-5" />
                 <span className="font-base">Excluir video</span>
@@ -113,7 +102,7 @@ export function VideoCard({ videoData }: VideoCardProps) {
         </CardContent>
       </Card>
 
-      <VideoDeleteDialog videoId={video.uuid} />
+      <VideoDeleteDialog videoId={video.id} />
     </Dialog>
   );
 }

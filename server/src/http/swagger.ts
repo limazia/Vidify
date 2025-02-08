@@ -1,6 +1,6 @@
 import swaggerAutogen from "swagger-autogen";
 
-import { env } from "@/env";
+import { env } from "@/shared/config/env";
 
 const doc = {
   info: {
