@@ -1,6 +1,6 @@
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
-import { VideoStatusType } from "@/shared/interfaces/Video";
+import { VideoStatusType } from "@/shared/interfaces/video";
 
 const statusIconMap: Record<
   VideoStatusType,

@@ -1,25 +1,23 @@
 import "express-async-errors";
-import { Server } from "node:http";
 import express, { Request, Response, NextFunction } from "express";
-import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-
-import swaggerFile from "./swagger.json";
+import bodyParser from "body-parser";
+import cors from "cors";
+import { createServer } from "http";
 
 import { initializeSocket } from "@/app/lib/socket";
-import { AppError } from "@/http/errors/app-error";
+import { HttpError } from "@/http/errors/http-error";
 import { routes } from "./routes";
 import { paths } from "@/app/config/paths";
+import swaggerFile from "./swagger.json";
 
 const app = express();
-export const server = new Server(app);
+const server = createServer(app);
 
-// Inicializa o Socket.IO
-initializeSocket(server);
+const io = initializeSocket(server);
 
-// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 app.use("/results", express.static(paths.results));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(routes);
@@ -31,18 +29,34 @@ app.use(
     response: Response,
     next: NextFunction
   ) => {
-    if (error instanceof AppError) {
+    if (error instanceof HttpError) {
+      console.log(error.message);
+
       return response.status(error.statusCode).json({
-        statusCode: error.statusCode,
-        message: error.message,
+        success: false,
+        error: {
+          statusCode: error.statusCode,
+          type: error.type,
+          message: error.message,
+          code: error.code,
+        },
+        timestamp: new Date().toISOString(),
       });
     }
 
-    console.error("Internal Server Error:", error.message);
+    console.log(error.message);
 
     return response.status(500).json({
-      statusCode: 500,
-      message: "Internal server error",
+      success: false,
+      error: {
+        statusCode: 500,
+        type: "error",
+        message: "Internal server error",
+        code: "INTERNAL_SERVER_ERROR",
+      },
+      timestamp: new Date().toISOString(),
     });
   }
 );
+
+export { server, io };

@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 
 import { env } from "@/env";
 
-import { generateController } from "@/app/modules/generate-video";
-import { videoController } from "@/app/modules/video";
+import { generateController } from "@/core/generate-video";
+import { videoController } from "@/core/video";
 
 export const routes = Router();
 

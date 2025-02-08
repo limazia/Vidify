@@ -2,17 +2,20 @@ import swaggerAutogen from "swagger-autogen";
 
 import { env } from "@/env";
 
-const url = env.NODE_ENV === "production" ? env.HOST : `${env.HOST}:${env.PORT}`;
-
 const doc = {
   info: {
-    title: "Vidify",
+    title: "Vidify API",
     version: "1.0.0",
-    description: "Documentação da API do Vidify",
   },
   servers: [
     {
-      url,
+      url: env.HOST,
+    },
+  ],
+  schemes: ["http", "https"],
+  tags: [
+    {
+      name: "Video",
     },
   ],
 };
@@ -20,6 +23,8 @@ const doc = {
 const output = "./swagger.json";
 const routes = ["./routes/index.ts"];
 
-swaggerAutogen()(output, routes, doc).then(async () => {
-  await import("../app.js");
+swaggerAutogen()(output, routes, doc).then(() => {
+  //await import("../app.js");
+
+  console.log("🧊 swagger.json gerado com sucesso!");
 });

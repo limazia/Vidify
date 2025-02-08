@@ -1,7 +1,7 @@
 import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema.createTable("videos-status", (table: Knex.TableBuilder) => {
+  return knex.schema.createTable("videos_status", (table: Knex.TableBuilder) => {
     table.string("id").primary().notNullable().unique();
     table
       .enu("status", ["pending", "processing", "completed", "failed"])
@@ -20,5 +20,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTable("videos-status");
+  return knex.schema.dropTable("videos_status");
 }

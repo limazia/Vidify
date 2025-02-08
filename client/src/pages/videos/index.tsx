@@ -20,16 +20,18 @@ export function Videos() {
       console.log("Socket disconnected");
     }
 
-    async function onVideoStatusEvent() {}
+    async function onVideoStatusEvent( ) {
+      console.log("Video status event"); 
+    }
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    socket.on("video-status", onVideoStatusEvent);
+    socket.on("video:status", onVideoStatusEvent);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.off("video-status", onVideoStatusEvent);
+      socket.off("video:status", onVideoStatusEvent);
     };
   }, []);
 

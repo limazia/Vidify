@@ -3,7 +3,7 @@ import JsFileDownloader from "js-file-downloader";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-import { VideoProps } from "@/shared/interfaces/Video";
+import { VideoProps } from "@/shared/interfaces/video";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -19,10 +19,16 @@ import { Button } from "@/components/ui/button";
 
 const PROMPT_MAX_LENGTH = 600;
 
-const availableModels = [
-  { name: "ChatGPT 3.5 Turbo", model: "gpt-turbo" },
-  { name: "Gemini 1.5 Flash", model: "gemini", disabled: true },
-  { name: "Claude 3", model: "claude", disabled: true },
+interface Model {
+  model: string;
+  name: string;
+  disabled?: boolean;
+}
+
+const availableModels: Model[] = [
+  { model: "gpt-turbo", name: "ChatGPT 3.5 Turbo" },
+  { model: "gemini", name: "Gemini 1.5 Flash" },
+  { model: "claude", name: "Claude 3" },
 ];
 
 const formSchema = z.object({
@@ -31,11 +37,11 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-export function Form({
-  onNavigate,
-}: {
-  onNavigate: (data: FormSchema) => void;
-}) {
+interface FormProps {
+  onSubmit: (data: FormSchema) => void;
+}
+
+export function Form({ onSubmit }: FormProps) {
   const [selectedAI, setSelectedAI] = useState("");
   const [openModel, setOpenModel] = useState(false);
 
@@ -63,12 +69,12 @@ export function Form({
   }
 
   return (
-    <form onSubmit={handleSubmit(onNavigate)}>
-      <div className="flex group flex-col space-y-2">
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col space-y-2 group">
         <div className="w-full flex flex-col items-center rounded-md border border-gray-300 disabled:cursor-not-allowed disabled:opacity-50 focus-within:border-gray-400 focus:border-gray-400 transition duration-500 ease-linear">
           <Textarea
             placeholder="Escreva o tema que você deseja..."
-            className="w-full h-[140px] bg-transparent border-none focus:border-none shadow-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-black/80 placeholder:text-gray-400 resize-none text-base"
+            className="w-full h-[140px] bg-transparent border-none focus:border-none shadow-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-black/80 placeholder:text-gray-400 resize-none text-base group-focus:text-black"
             maxLength={PROMPT_MAX_LENGTH}
             disabled={isSubmitting}
             {...register("term")}
@@ -79,11 +85,13 @@ export function Form({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center gap-1.5 rounded-full p-2 h-9 text-xs"
+                  className="flex items-center gap-1.5 rounded-full p-2 h-9 text-xs text-gray-500 group-focus-within:text-black group-focus-within:border-gray-400 transition duration-500 ease-linear"
                   onClick={handleOpenModel}
                 >
                   <Globe className="size-4" />
-                  {selectedAI ? selectedAI : "Modelo"}
+                  {selectedAI
+                    ? availableModels.find((m) => m.model === selectedAI)?.name
+                    : "Modelo"}
                   <ChevronDown
                     className={cn(
                       "size-4 transition-transform duration-200",
@@ -103,7 +111,8 @@ export function Form({
                     <DropdownMenuRadioItem
                       key={index}
                       value={model.model}
-                      disabled={model.disabled}
+                      disabled={model?.disabled}
+                      className="cursor-pointer"
                     >
                       {model.name}
                     </DropdownMenuRadioItem>
@@ -116,21 +125,21 @@ export function Form({
               {termValue && (
                 <Button
                   variant="link"
-                  className="px-0 text-gray-400 hover:text-black"
+                  className="px-0 text-gray-400 hover:text-black group-focus-within:text-black"
                   onClick={handleClear}
                 >
                   <X className="size-5" />
                 </Button>
               )}
 
-              <span className="text-sm font-medium text-gray-400">
+              <span className="text-sm font-medium text-gray-400 group-focus-within:text-black transition duration-500 ease-linear">
                 {termValue?.length}/{PROMPT_MAX_LENGTH}
               </span>
 
               <Button
                 type="submit"
                 size="icon"
-                className="px-0 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+                className="px-0 bg-purple-600 hover:bg-purple-700 text-white/60 disabled:text-white/60 group-focus-within:text-white rounded-md transition duration-500 ease-linear"
                 disabled={isSubmitting || !isDirty || !isValid}
               >
                 {isSubmitting ? (

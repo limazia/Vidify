@@ -35,7 +35,7 @@ export function AIAssistant() {
       const baseURL = "/videos";
 
       const queryParams = {
-        id: chatId,
+        video: chatId,
       };
 
       const queryString = qs.stringify(queryParams);
@@ -47,7 +47,7 @@ export function AIAssistant() {
     },
   });
 
-  async function handleCreateVideo(data: FormSchema) {
+  async function handleGenerateVideo(data: FormSchema) {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     await generateVideoFn(data);
@@ -75,7 +75,7 @@ export function AIAssistant() {
 
       <div className="space-y-2">
         <FormProvider {...form}>
-          <Form onNavigate={handleCreateVideo} />
+          <Form onSubmit={handleGenerateVideo} />
         </FormProvider>
       </div>
     </div>

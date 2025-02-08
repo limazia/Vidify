@@ -13,7 +13,7 @@ connection
       console.log("🕛 Queue workers are running!");
     });
 
-    server.listen(env.PORT, "0.0.0.0", () => {
+    server.listen(env.PORT, () => {
       console.log(`🚀 Server is running on port :${env.PORT}`);
     });
   })

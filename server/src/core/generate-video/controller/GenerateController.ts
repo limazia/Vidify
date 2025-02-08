@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 
 import { GenerateDTO } from "../dto/GenerateDTO";
 import { VideoGeneratorService } from "../interface/VideoGeneratorService";
-import { AppError } from "@/http/errors/app-error";
+import { AppError } from "@/http/errors/http-error.ts";
 
 export class GenerateController {
   constructor(private readonly videoService: VideoGeneratorService) {}

@@ -1,6 +1,6 @@
 import { api } from "@/shared/lib/axios";
 
-import { Video } from "../interfaces/Video";
+import { Video } from "../interfaces/video";
 
 interface IPagination {
   total: number;

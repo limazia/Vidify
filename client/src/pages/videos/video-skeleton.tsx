@@ -5,12 +5,9 @@ export function VideoSkeleton() {
   return (
     <>
       {Array.from({ length: 2 }).map((_, index) => (
-        <Card
-          key={index}
-          className="w-full rounded-md overflow-hidden shadow-md mt-3"
-        >
+        <Card key={index}>
           <div className="relative flex items-center justify-center">
-            <div className="w-full h-48 bg-gray-300 rounded-b-none" />
+            <div className="w-full h-48 bg-gray-300 rounded-b-none rounded-md" />
 
             <div className="w-full absolute left-4 top-4 flex flex-col">
               <Skeleton className="w-16 h-4" />
@@ -24,8 +21,8 @@ export function VideoSkeleton() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Skeleton className="w-36 h-12" />
-              <Skeleton className="w-24 h-12" />
+              <Skeleton className="w-full h-12" />
+              <Skeleton className="w-full h-12" />
             </div>
           </CardContent>
         </Card>
