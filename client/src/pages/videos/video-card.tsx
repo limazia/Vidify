@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Download, Trash2 } from "lucide-react";
 import JsFileDownloader from "js-file-downloader";
 
+import { cn } from "@/shared/utils/cn";
 import { formatDate } from "@/shared/utils/format-date";
 import { Video } from "@/shared/interfaces/video";
 
@@ -13,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { VideoStatus } from "./video-status";
 import { VideoDeleteDialog } from "./video-delete-dialog";
-import { cn } from "@/shared/utils/cn";
 
 interface VideoCardProps {
   video: Video;
@@ -21,13 +22,19 @@ interface VideoCardProps {
 
 export function VideoCard({ video }: VideoCardProps) {
   const { search } = useLocation();
+  const [open, setOpen] = useState(false);
 
   const params = new URLSearchParams(search);
   const videoId = params.get("video");
 
   return (
-    <Dialog>
-      <Card className={cn("w-full rounded-md", videoId === video.id && "border-gray-500")}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Card
+        className={cn(
+          "w-full rounded-md",
+          videoId === video.id && "border-gray-500"
+        )}
+      >
         <div className="relative flex items-center justify-center rounded-md">
           {video.status.state === "finished" ? (
             video.file?.cover_url ? (
@@ -93,6 +100,7 @@ export function VideoCard({ video }: VideoCardProps) {
                 variant="link"
                 disabled={video?.status?.state !== "finished"}
                 className="w-full flex items-center cursor-pointer text-red-500 hover:no-underline"
+                onClick={() => setOpen(true)}
               >
                 <Trash2 className="w-5 h-5" />
                 <span className="font-base">Excluir video</span>
@@ -102,7 +110,7 @@ export function VideoCard({ video }: VideoCardProps) {
         </CardContent>
       </Card>
 
-      <VideoDeleteDialog videoId={video.id} />
+      <VideoDeleteDialog videoId={video.id} onClose={setOpen} />
     </Dialog>
   );
 }

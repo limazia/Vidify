@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const PHRASE_FOR_DELETION = "excluir projeto";
+const PHRASE_FOR_DELETION = "excluir video";
 
 const formSchema = z.object({
   confirmText: z
@@ -35,9 +35,13 @@ type FormSchema = z.infer<typeof formSchema>;
 
 interface VideoDeleteDialogProps {
   videoId: string;
+  onClose: (value: boolean) => void;
 }
 
-export function VideoDeleteDialog({ videoId }: VideoDeleteDialogProps) {
+export function VideoDeleteDialog({
+  videoId,
+  onClose,
+}: VideoDeleteDialogProps) {
   const queryClient = useQueryClient();
 
   const {
@@ -55,6 +59,8 @@ export function VideoDeleteDialog({ videoId }: VideoDeleteDialogProps) {
       queryClient.invalidateQueries({
         queryKey: ["videos"],
       });
+
+      onClose(false);
 
       toast.success("Video excluido com sucesso!");
     },

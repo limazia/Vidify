@@ -1,4 +1,4 @@
-export type VideoStatusType = "pending" | "processing" | "error" | "finished";
+export type VideoStatusType = "pending" | "processing" | "failed" | "finished";
 
 export interface ListParams {
   query: string;

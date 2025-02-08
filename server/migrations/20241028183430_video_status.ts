@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("videos_status", (table: Knex.TableBuilder) => {
     table.string("id").primary().notNullable().unique();
     table
-      .enu("status", ["pending", "processing", "completed", "failed"])
+      .enu("status", ["pending", "processing", "failed", "finished"])
       .notNullable();
     table.string("status_message");
     table

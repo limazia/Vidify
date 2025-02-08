@@ -83,7 +83,7 @@ export function Videos() {
             <span className="font-bold text-xl">Nenhum video encontrado</span>
 
             <small className="text-gray-500">
-              Crie um novo clicando no botão "Nova Video".
+              Crie um novo clicando no botão "Novo Video".
             </small>
           </div>
         </div>

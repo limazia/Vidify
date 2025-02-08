@@ -9,7 +9,7 @@ const statusIconMap: Record<
 > = {
   pending: Loader2,
   processing: Loader2,
-  error: XCircle,
+  failed: XCircle,
   finished: CheckCircle2,
 };
 
@@ -29,7 +29,7 @@ export function VideoStatus({ status }: VideoStatusProps) {
           "w-10 h-10",
           status === "pending" && "text-primary animate-spin",
           status === "processing" && "text-primary animate-spin",
-          status === "error" && "text-red-500",
+          status === "failed" && "text-red-500",
           status === "finished" && "text-green-500"
         )}
       />
