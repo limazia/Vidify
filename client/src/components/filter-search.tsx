@@ -1,8 +1,9 @@
 import { Search, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
 import { z } from "zod";
+
+import { useFilter } from "@/shared/hooks/useFilter";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,10 +15,8 @@ const filterSchema = z.object({
 type FilterSchema = z.infer<typeof filterSchema>;
 
 export function SearchInput() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { query, setQuery } = useFilter();
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const query = searchParams.get("query") ?? "";
 
   const { register, handleSubmit, reset } = useForm<FilterSchema>({
     defaultValues: {
@@ -26,32 +25,21 @@ export function SearchInput() {
   });
 
   function handleFilter(data: { query?: string }) {
-    setSearchParams((prev) => {
-      if (data.query) {
-        prev.set("query", data.query);
-      }
-
-      prev.set("page", "1");
-
-      return prev;
-    });
+    setQuery(data.query || "");
+    // Reset page to 1 when changing filters
+    useFilter().setPageIndex("1");
   }
 
   function handleClearFilters() {
-    setSearchParams((prev) => {
-      prev.delete("query");
-
-      prev.set("page", "1");
-
-      return prev;
-    });
-
+    setQuery("");
+    // Reset page to 1 when clearing filters
+    useFilter().setPageIndex("1");
     reset({
       query: "",
     });
   }
 
-  const hasAnyFilter = !!query;
+  const hasAnyFilter = query !== "";
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -80,7 +68,7 @@ export function SearchInput() {
         </div>
 
         <Input
-          placeholder="Busque por nome de empresa ou e-mail"
+          placeholder="Pesquise por nome ou tags..."
           className="pl-11"
           {...register("query")}
           ref={(e) => {

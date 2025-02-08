@@ -3,44 +3,32 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { z } from "zod";
 import qs from "qs";
 
 import { generateVideo } from "@/shared/http/generate-video";
+import { formSchema, FormSchema } from "@/shared/schemas/form-assistant";
 
-import { SuggestionCard } from "./suggestion-card";
 import { Form } from "./form";
-
-const formSchema = z.object({
-  term: z.string().min(5),
-});
-
-type FormSchema = z.infer<typeof formSchema>;
+import { SuggestionCard } from "./suggestion-card";
 
 export function AIAssistant() {
   const navigate = useNavigate();
 
-  const form = useForm<FormSchema>({
+  const methods = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       term: "",
+      model: "gpt-turbo",
     },
+    mode: "onChange",
   });
 
-  const { mutateAsync: generateVideoFn } = useMutation({
+  const { mutate: generateVideoMutationFn } = useMutation({
     mutationFn: generateVideo,
-    onSuccess: (data) => {
-      const chatId = data.id;
+    onSuccess: ({ id: chatId }) => {
+      const queryParams = qs.stringify({ video: chatId });
 
-      const baseURL = "/videos";
-
-      const queryParams = {
-        video: chatId,
-      };
-
-      const queryString = qs.stringify(queryParams);
-
-      navigate(`${baseURL}?${queryString}`);
+      navigate(`/videos?${queryParams}`);
     },
     onError: () => {
       toast.error("Erro ao gerar o vídeo, tente novamente mais tarde");
@@ -48,9 +36,11 @@ export function AIAssistant() {
   });
 
   async function handleGenerateVideo(data: FormSchema) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    await generateVideoFn(data);
+    try {
+      await generateVideoMutationFn(data);
+    } catch (error) {
+      console.error("Generate video error:", error);
+    }
   }
 
   return (
@@ -62,22 +52,16 @@ export function AIAssistant() {
             o que você gostaria de saber?
           </span>
         </h1>
-
         <p className="text-sm text-gray-600">
           Use um dos prompts mais comuns abaixo ou use o seu próprio para
           começar
         </p>
       </div>
 
-      <div className="space-y-2">
-        <SuggestionCard setValue={form.setValue} trigger={form.trigger} />
-      </div>
-
-      <div className="space-y-2">
-        <FormProvider {...form}>
-          <Form onSubmit={handleGenerateVideo} />
-        </FormProvider>
-      </div>
+      <FormProvider {...methods}>
+        <SuggestionCard />
+        <Form onSubmit={handleGenerateVideo} />
+      </FormProvider>
     </div>
   );
 }

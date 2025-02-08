@@ -24,6 +24,7 @@ interface VideoStatus {
 export interface Video {
   id: string;
   term: string;
+  road_map: string;
   tags: string[];
   file?: VideoFile;
   status: VideoStatus;

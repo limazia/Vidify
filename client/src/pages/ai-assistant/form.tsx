@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { z } from "zod";
 import { useFormContext } from "react-hook-form";
 import { ArrowRight, Loader2, X, Globe, ChevronDown } from "lucide-react";
 
@@ -19,30 +18,17 @@ import { Button } from "@/components/ui/button";
 
 const PROMPT_MAX_LENGTH = 600;
 
-interface Model {
-  model: string;
-  name: string;
-  disabled?: boolean;
-}
-
-const availableModels: Model[] = [
+const availableModels: { model: string; name: string; disabled?: boolean }[] = [
   { model: "gpt-turbo", name: "ChatGPT 3.5 Turbo" },
   { model: "gemini", name: "Gemini 1.5 Flash" },
   { model: "claude", name: "Claude 3" },
 ];
 
-const formSchema = z.object({
-  term: z.string().min(5),
-});
-
-type FormSchema = z.infer<typeof formSchema>;
-
 interface FormProps {
-  onSubmit: (data: FormSchema) => void;
+  onSubmit: (data: any) => Promise<void>;
 }
 
 export function Form({ onSubmit }: FormProps) {
-  const [selectedAI, setSelectedAI] = useState("");
   const [openModel, setOpenModel] = useState(false);
 
   const {
@@ -52,49 +38,49 @@ export function Form({ onSubmit }: FormProps) {
     watch,
     trigger,
     formState: { isSubmitting, isDirty, isValid },
-  } = useFormContext<FormSchema>();
+  } = useFormContext();
 
   const termValue = watch("term");
+  const selectedModel = watch("model");
 
   const handleOpenModel = () => setOpenModel((prev) => !prev);
-
-  const handleSortChange = (ai: string) => {
-    setSelectedAI(ai);
+  const handleModelChange = (model: string) => {
+    setValue("model", model, { shouldDirty: true });
     setOpenModel(false);
+    trigger();
   };
 
-  function handleClear() {
+  const handleClear = () => {
     setValue("term", "", { shouldDirty: true });
     trigger();
-  }
+  };
+
+  const selectedModelName = availableModels.find(m => m.model === selectedModel)?.name || "Modelo";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col space-y-2 group">
-        <div className="w-full flex flex-col items-center rounded-md border border-gray-300 disabled:cursor-not-allowed disabled:opacity-50 focus-within:border-gray-400 focus:border-gray-400 transition duration-500 ease-linear">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+      <div className="flex flex-col items-center w-full">
+        <div className="w-full rounded-md border border-gray-300 focus-within:border-gray-400 transition">
           <Textarea
             placeholder="Escreva o tema que você deseja..."
-            className="w-full h-[140px] bg-transparent border-none focus:border-none shadow-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-black/80 placeholder:text-gray-400 resize-none text-base group-focus:text-black"
+            className="w-full h-[140px] bg-transparent border-none focus:border-none shadow-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-black/80 placeholder:text-gray-400 resize-none text-base"
             maxLength={PROMPT_MAX_LENGTH}
             disabled={isSubmitting}
             {...register("term")}
           />
-
           <div className="w-full flex items-center justify-between p-2">
             <DropdownMenu open={openModel} onOpenChange={setOpenModel}>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center gap-1.5 rounded-full p-2 h-9 text-xs text-gray-500 group-focus-within:text-black group-focus-within:border-gray-400 transition duration-500 ease-linear"
                   onClick={handleOpenModel}
+                  className="flex items-center gap-1.5 rounded-full p-2 h-9 text-xs text-gray-500 focus-within:text-black transition"
                 >
                   <Globe className="size-4" />
-                  {selectedAI
-                    ? availableModels.find((m) => m.model === selectedAI)?.name
-                    : "Modelo"}
+                  {selectedModelName}
                   <ChevronDown
                     className={cn(
-                      "size-4 transition-transform duration-200",
+                      "size-4 transition-transform",
                       openModel && "rotate-180"
                     )}
                   />
@@ -104,14 +90,14 @@ export function Form({ onSubmit }: FormProps) {
                 <DropdownMenuLabel>Modelo</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
-                  value={selectedAI}
-                  onValueChange={(value) => handleSortChange(value)}
+                  value={selectedModel}
+                  onValueChange={handleModelChange}
                 >
                   {availableModels.map((model, index) => (
                     <DropdownMenuRadioItem
                       key={index}
                       value={model.model}
-                      disabled={model?.disabled}
+                      disabled={model.disabled}
                       className="cursor-pointer"
                     >
                       {model.name}
@@ -120,26 +106,23 @@ export function Form({ onSubmit }: FormProps) {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-
             <div className="flex items-center gap-2">
               {termValue && (
                 <Button
                   variant="link"
-                  className="px-0 text-gray-400 hover:text-black group-focus-within:text-black"
+                  className="text-gray-400 hover:text-black focus:text-black"
                   onClick={handleClear}
                 >
                   <X className="size-5" />
                 </Button>
               )}
-
-              <span className="text-sm font-medium text-gray-400 group-focus-within:text-black transition duration-500 ease-linear">
-                {termValue?.length}/{PROMPT_MAX_LENGTH}
+              <span className="text-sm font-medium text-gray-400 focus:text-black transition">
+                {termValue?.length || 0}/{PROMPT_MAX_LENGTH}
               </span>
-
               <Button
                 type="submit"
                 size="icon"
-                className="px-0 bg-purple-600 hover:bg-purple-700 text-white/60 disabled:text-white/60 group-focus-within:text-white rounded-md transition duration-500 ease-linear"
+                className="bg-purple-600 hover:bg-purple-700 text-white/60 disabled:text-white/60 rounded-md"
                 disabled={isSubmitting || !isDirty || !isValid}
               >
                 {isSubmitting ? (

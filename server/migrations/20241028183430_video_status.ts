@@ -1,14 +1,14 @@
 import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema.createTable("videos_status", (table: Knex.TableBuilder) => {
+  return knex.schema.createTable("video_status", (table: Knex.TableBuilder) => {
     table.string("id").primary().notNullable().unique();
     table
-      .enu("status", ["pending", "processing", "failed", "finished"])
+      .enu("state", ["pending", "processing", "failed", "finished"])
       .notNullable();
-    table.string("status_message");
+    table.string("message");
     table
-      .string("id_video")
+      .string("video_id")
       .notNullable()
       .references("id")
       .inTable("videos")
@@ -20,5 +20,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTable("videos_status");
+  return knex.schema.dropTable("video_status");
 }

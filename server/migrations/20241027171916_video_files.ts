@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("type");
 
     table
-      .string("id_video")
+      .string("video_id")
       .notNullable()
       .references("id")
       .inTable("videos")

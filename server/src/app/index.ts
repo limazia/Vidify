@@ -1,22 +1,20 @@
 import fs from "fs/promises";
 import path from "node:path";
 
-import { buildSubtitle } from "./BuildSubtitle";
-import { buildVideo } from "./BuildVideo";
-import { generateAudio } from "./GenerateAudio";
-import { generateContent } from "./GenerateContent";
-import { generateImages } from "./GenerateImages";
-import { generateCover } from "./GenerateCover";
-import { generateSubtitle } from "./GenerateSubtitles";
+import { buildSubtitle } from "./build-subtitle";
+import { buildVideo } from "./build-video";
+import { generateAudio } from "./generate-audio";
+import { generateContent } from "./generate-content";
+import { generateImages } from "./generate-images";
+import { generateCover } from "./generate-cover";
+import { generateSubtitle } from "./generate-subtitles";
+import { sendVideoEvent } from "./send-event";
 
 import { SpeechBase } from "@/shared/types/speech-base";
-import { getIO } from "@/shared/lib/socket";
 import { base64Encode } from "@/shared/utils";
 import { paths } from "@/shared/config/paths";
-import { sendVideoEvent } from "./SendEvent";
 
-export async function videoGenerator(term: string, id: string) {
-  const io = getIO();
+export async function videoGenerator(id: string, term: string, model: string) {
   const config: SpeechBase = {
     OutputS3BucketName: "dark-audio-generated",
     Engine: "neural",
@@ -31,20 +29,21 @@ export async function videoGenerator(term: string, id: string) {
 
   console.log("Generating content");
   await sendVideoEvent({
-    io,
     videoId: id,
-    status: "processing",
-    message: "Gerando conteúdo"
+    state: "processing",
+    message: "Gerando conteúdo",
   });
 
   const content = await generateContent({ term });
   if (!content) {
     console.log("Content not generated");
-    io.emit("video-status", {
-      id,
-      status: "error",
-      status_message: "Conteúdo não gerado",
+
+    await sendVideoEvent({
+      videoId: id,
+      state: "failed",
+      message: "Conteúdo não gerado",
     });
+
     return null;
   }
 
@@ -54,10 +53,10 @@ export async function videoGenerator(term: string, id: string) {
   )}</prosody></speak>`;
 
   console.log("Generating audio and subtitle");
-  io.emit("video-status", {
-    id,
-    status: "processing",
-    status_message: "Gerando áudio e legenda",
+  await sendVideoEvent({
+    videoId: id,
+    state: "processing",
+    message: "Gerando áudio e legenda",
   });
 
   await Promise.all([
@@ -66,45 +65,47 @@ export async function videoGenerator(term: string, id: string) {
   ]);
 
   console.log("Building subtitle");
-  io.emit("video-status", {
-    id,
-    status: "processing",
-    status_message: "Construindo legenda",
+  await sendVideoEvent({
+    videoId: id,
+    state: "processing",
+    message: "Construindo legenda",
   });
+
   await buildSubtitle(id);
 
   console.log("Downloading images");
-  io.emit("video-status", {
-    id,
-    status: "processing",
-    status_message: "Baixando imagens",
+  await sendVideoEvent({
+    videoId: id,
+    state: "processing",
+    message: "Baixando imagens",
   });
+
   await generateImages({ query: content.imageQuery, id });
 
   console.log("Building cover");
-  io.emit("video-status", {
-    id,
-    status: "processing",
-    status_message: "Gerando capa",
+  await sendVideoEvent({
+    videoId: id,
+    state: "processing",
+    message: "Gerando capa",
   });
   await generateCover({ id, title: content.title });
 
   console.log("Putting all the parts of this video together");
-  io.emit("video-status", {
-    id,
-    status: "processing",
-    status_message: "Juntando todas as partes desse vídeo",
+  await sendVideoEvent({
+    videoId: id,
+    state: "processing",
+    message: "Juntando todas as partes desse vídeo",
   });
   await buildVideo(id);
 
   console.log("Video generated");
   const cover = base64Encode(`${dir}/cover_background.jpg`);
 
-  io.emit("video-status", {
-    id,
+  await sendVideoEvent({
+    videoId: id,
+    state: "completed",
+    message: "Seu vídeo foi gerado",
     cover,
-    status: "finished",
-    status_message: "Seu vídeo foi gerado",
   });
 
   return { id, term };

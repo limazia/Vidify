@@ -1,5 +1,6 @@
-import { useSearchParams } from "react-router-dom";
 import { ArrowUpDown, List } from "lucide-react";
+
+import { useFilter } from "@/shared/hooks/useFilter";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,27 +14,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { SearchInput } from "./filter-search";
+ 
 
 export function FilterBar() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const sortOrder = searchParams.get("sort_order") ?? "alphabetical";
-  const itemsPerPage = searchParams.get("items_per_page") ?? "10";
+  const { sortOrder, setSortOrder, itemsPerPage, setItemsPerPage, setPageIndex } = useFilter();
 
   function handleFilter(data: { sortOrder?: string; itemsPerPage?: string }) {
-    setSearchParams((prev) => {
-      if (data.sortOrder) {
-        prev.set("sort_order", data.sortOrder);
-      }
-
-      if (data.itemsPerPage) {
-        prev.set("items_per_page", data.itemsPerPage);
-      }
-
-      prev.set("page", "1");
-
-      return prev;
-    });
+    if (data.sortOrder) {
+      setSortOrder(data.sortOrder);
+    }
+    if (data.itemsPerPage) {
+      setItemsPerPage(data.itemsPerPage);
+    }
+   
+    setPageIndex("1");
   }
 
   const sortOrderText = {

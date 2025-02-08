@@ -6,6 +6,12 @@ import { HttpError } from "@/http/errors/http-error";
 import { paths } from "@/shared/config/paths";
 import { ListParams, ListVideoResponse, Video } from "@/shared/types/video";
 import { connection } from "@/database";
+import { videoGenerator } from "@/app/index";
+
+interface SortOrder {
+  column: string;
+  direction: "asc" | "desc";
+}
 
 class VideoService {
   async list({
@@ -14,6 +20,23 @@ class VideoService {
     perPage,
     sortOrder,
   }: ListParams): Promise<ListVideoResponse> {
+    const allowedPerPageValues = [10, 20, 50, 100, 500];
+    const offset = (page - 1) * perPage;
+
+    if (!allowedPerPageValues.includes(perPage)) {
+      perPage = 10;
+    }
+
+    const SORT_ORDER_MAP: Record<string, SortOrder> = {
+      alphabetical: { column: "videos.created_at", direction: "asc" },
+      creation: { column: "created_at", direction: "desc" },
+    };
+
+    const sortOrderConfig = SORT_ORDER_MAP[sortOrder] || {
+      column: "videos.created_at",
+      direction: "asc",
+    };
+
     // const cacheKey = CacheService.generateCacheKey({
     //   query,
     //   page,
@@ -30,8 +53,8 @@ class VideoService {
     try {
       const [total, videos] = await Promise.all([
         connection("videos")
-          .leftJoin("video_files", "videos.id", "video_files.id_video")
-          .leftJoin("videos_status", "videos.id", "videos_status.id_video")
+          .leftJoin("video_files", "videos.id", "video_files.video_id")
+          .leftJoin("video_status", "videos.id", "video_status.video_id")
           .where(
             connection.raw("LOWER(videos.term) LIKE ?", [
               `%${query.toLowerCase()}%`,
@@ -45,8 +68,8 @@ class VideoService {
           .count("* as total")
           .first(),
         connection("videos")
-          .leftJoin("video_files", "videos.id", "video_files.id_video")
-          .leftJoin("videos_status", "videos.id", "videos_status.id_video")
+          .leftJoin("video_files", "videos.id", "video_files.video_id")
+          .leftJoin("video_status", "videos.id", "video_status.video_id")
           .where(
             connection.raw("LOWER(videos.term) LIKE ?", [
               `%${query.toLowerCase()}%`,
@@ -67,21 +90,22 @@ class VideoService {
             "video_files.height",
             "video_files.size",
             "video_files.type",
-            "videos_status.status",
-            "videos_status.status_message",
+            "video_status.state",
+            "video_status.message",
             "videos.updated_at",
             "videos.created_at"
           )
-          .orderBy("videos.created_at", sortOrder)
-          .offset((page - 1) * perPage)
+          .orderBy(sortOrderConfig.column, sortOrderConfig.direction)
+          .offset(offset)
           .limit(perPage),
       ]);
 
       const totalCount = Number(total?.total || 0);
 
       const videoData: Video[] = videos.map((v) => ({
-        id: v.id,
-        term: v.term,
+        id: v.id ? v.id : null,
+        term: v.term ? v.term : null,
+        road_map: v.road_map ? v.road_map : null,
         tags: v.tags ? v.tags.split(",").map((tag: string) => tag.trim()) : [],
         ...(v.status === "completed"
           ? {
@@ -96,8 +120,8 @@ class VideoService {
             }
           : {}),
         status: {
-          state: v.status,
-          status_message: v.status_message || null,
+          state: v.state,
+          message: v.message || null,
         },
         updated_at: new Date(v.updated_at),
         created_at: new Date(v.created_at),
@@ -122,7 +146,7 @@ class VideoService {
     }
   }
 
-  async generate(term: string): Promise<{ id: string }> {
+  async generate(term: string, model: string): Promise<{ id: string }> {
     const videoId = uuid();
 
     try {
@@ -134,25 +158,27 @@ class VideoService {
 
         await trx("video_files").insert({
           id: uuid(),
-          id_video: videoId,
+          video_id: videoId,
         });
 
-        await trx("videos_status").insert({
+        await trx("video_status").insert({
           id: uuid(),
-          status: "pending",
-          id_video: videoId,
+          state: "pending",
+          video_id: videoId,
         });
 
-        trx.commit;
+        await trx.commit();
 
-        // await CacheService.invalidateCache();
+        await videoGenerator(videoId, term, model);
+
+        //await CacheService.invalidateCache();
       });
 
       return {
         id: videoId,
       };
     } catch (err) {
-      console.error(`Error: ${(err as Error).message}`);
+      console.error(`Error generating video: ${(err as Error).message}`);
       throw err;
     }
   }

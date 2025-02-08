@@ -1,6 +1,6 @@
 import Jimp from "jimp";
 
-import { buildCover } from "./BuildCover";
+import { buildCover } from "./build-cover";
 import { paths } from "@/shared/config/paths";
 
 interface GenerateCover {

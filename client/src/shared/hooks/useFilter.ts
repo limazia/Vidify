@@ -1,44 +1,59 @@
-import { useQueryState } from "nuqs";
+import { useQueryStates } from "nuqs";
 
 export function useFilter() {
-  const [query, setQuery] = useQueryState("query", {
-    defaultValue: "",
-    parse: (value) => value || "",
-    history: "push",
-  });
+  const [{ query, sortOrder, itemsPerPage, pageIndex }, setParams] =
+    useQueryStates(
+      {
+        query: {
+          defaultValue: "",
+          parse: (value) => value || "",
+        },
+        sortOrder: {
+          defaultValue: "alphabetical",
+          parse: (value) => value || "alphabetical",
+        },
+        itemsPerPage: {
+          defaultValue: "10",
+          parse: (value) => {
+            const parsed = parseInt(value, 10);
+            return isNaN(parsed) ? "10" : Math.max(parsed, 1).toString();
+          },
+        },
+        pageIndex: {
+          defaultValue: "1",
+          parse: (value) => {
+            const parsed = parseInt(value, 10);
+            return isNaN(parsed) ? "1" : Math.max(parsed, 1).toString();
+          },
+        },
+      },
+      {
+        history: "push",
+        shallow: false,
+      }
+    );
 
-  const [sortOrder, setSortOrder] = useQueryState("sort_order", {
-    defaultValue: "alphabetical",
-    parse: (value) => value || "alphabetical",
-    history: "push",
-  });
-
-  const [itemsPerPage, setItemsPerPage] = useQueryState("items_per_page", {
-    defaultValue: "10",
-    parse: (value) => {
-      const parsed = parseInt(value, 10);
-      return isNaN(parsed) ? "10" : Math.max(parsed, 1).toString();
-    },
-    history: "push",
-  });
-
-  const [pageIndex, setPageIndex] = useQueryState("page", {
-    defaultValue: "1",
-    parse: (value) => {
-      const parsed = parseInt(value, 10);
-      return isNaN(parsed) ? "1" : Math.max(parsed, 1).toString();
-    },
-    history: "push",
-  });
+  const setQuery = (newValue: string) => {
+    setParams({ query: newValue });
+  };
+  const setSortOrder = (newValue: string) => {
+    setParams({ sortOrder: newValue });
+  };
+  const setItemsPerPage = (newValue: string) => {
+    setParams({ itemsPerPage: newValue });
+  };
+  const setPageIndex = (newValue: string) => {
+    setParams({ pageIndex: newValue });
+  };
 
   return {
     query,
-    setQuery,
     sortOrder,
-    setSortOrder,
     itemsPerPage,
-    setItemsPerPage,
     pageIndex,
+    setQuery,
+    setSortOrder,
+    setItemsPerPage,
     setPageIndex,
   };
 }
