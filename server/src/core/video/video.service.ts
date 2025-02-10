@@ -7,6 +7,7 @@ import { paths } from "@/shared/config/paths";
 import { ListParams, ListVideoResponse, Video } from "@/shared/types/video";
 import { connection } from "@/database";
 import { videoGenerator } from "@/app/index";
+import { Model } from "@/shared/types/model";
 
 interface SortOrder {
   column: string;
@@ -29,7 +30,7 @@ class VideoService {
 
     const SORT_ORDER_MAP: Record<string, SortOrder> = {
       alphabetical: { column: "videos.created_at", direction: "asc" },
-      creation: { column: "created_at", direction: "desc" },
+      creation: { column: "videos.created_at", direction: "desc" },
     };
 
     const sortOrderConfig = SORT_ORDER_MAP[sortOrder] || {
@@ -51,35 +52,27 @@ class VideoService {
     // }
 
     try {
+      const baseQuery = connection("videos")
+        .leftJoin("video_files", "videos.id", "video_files.video_id")
+        .leftJoin("video_status", "videos.id", "video_status.video_id")
+        .where((builder) => {
+          builder
+            .where(
+              connection.raw("LOWER(videos.term) LIKE ?", [
+                `%${query.toLowerCase()}%`,
+              ])
+            )
+            .orWhere(
+              connection.raw("LOWER(videos.tags) LIKE ?", [
+                `%${query.toLowerCase()}%`,
+              ])
+            );
+        });
+
       const [total, videos] = await Promise.all([
-        connection("videos")
-          .leftJoin("video_files", "videos.id", "video_files.video_id")
-          .leftJoin("video_status", "videos.id", "video_status.video_id")
-          .where(
-            connection.raw("LOWER(videos.term) LIKE ?", [
-              `%${query.toLowerCase()}%`,
-            ])
-          )
-          .orWhere(
-            connection.raw("LOWER(videos.tags) LIKE ?", [
-              `%${query.toLowerCase()}%`,
-            ])
-          )
-          .count("* as total")
-          .first(),
-        connection("videos")
-          .leftJoin("video_files", "videos.id", "video_files.video_id")
-          .leftJoin("video_status", "videos.id", "video_status.video_id")
-          .where(
-            connection.raw("LOWER(videos.term) LIKE ?", [
-              `%${query.toLowerCase()}%`,
-            ])
-          )
-          .orWhere(
-            connection.raw("LOWER(videos.tags) LIKE ?", [
-              `%${query.toLowerCase()}%`,
-            ])
-          )
+        baseQuery.clone().count("* as total").first(),
+        baseQuery
+          .clone()
           .select(
             "videos.id",
             "videos.term",
@@ -146,7 +139,7 @@ class VideoService {
     }
   }
 
-  async generate(term: string, model: string): Promise<{ id: string }> {
+  async generate(term: string, model: Model): Promise<{ id: string }> {
     const videoId = uuid();
 
     try {

@@ -18,23 +18,28 @@ interface UnsplashResponse {
   };
 }
 
+const api = axios.create({
+  baseURL: env.UNSPLASH_API_URL,
+  headers: {
+    Authorization: `Client-ID ${env.UNSPLASH_ACCESS_KEY}`,
+  },
+});
+
 export async function searchImages({
   query,
   perPage = 10,
   imageSize = "small",
 }: SearchImages): Promise<string[]> {
   try {
-    const {
-      data: { results },
-    } = await axios.get(env.UNSPLASH_API_URL, {
+    const { data } = await api.get("/search/photos", {
       params: {
         query,
-        client_id: env.UNSPLASH_API_TOKEN,
         per_page: perPage,
+        lang: "pt",
       },
     });
 
-    const images = results.map(
+    const images = data.results.map(
       (result: UnsplashResponse) => result.urls[imageSize]
     );
 

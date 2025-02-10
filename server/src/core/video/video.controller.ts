@@ -11,7 +11,7 @@ class VideoController {
       query = "",
       page = 1,
       per_page = 10,
-      sort_order = "alphabetical",
+      sort_order = "creation",
     } = request.query;
 
     try {

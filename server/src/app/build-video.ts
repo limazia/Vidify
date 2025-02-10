@@ -5,14 +5,11 @@ import { getMediaDuration } from "@/shared/utils";
 import { paths } from "@/shared/config/paths";
 
 export async function buildVideo(id: string): Promise<void> {
-  const audio = path.join(paths.results, `video_${id}`, "audio.mp3");
-  const subtitle = path.join(paths.results, `video_${id}`, "captions.ass");
-  const cover = path.join(paths.results, `video_${id}`, "cover.png");
-  const finalVideo = path.join(
-    paths.results,
-    `video_${id}`,
-    "final_video.mp4"
-  );
+  const folderPrefix = `video_${id}`;
+  const audio = path.join(paths.results, folderPrefix, "audio.mp3");
+  const subtitle = path.join(paths.results, folderPrefix, "captions.ass");
+  const cover = path.join(paths.results, folderPrefix, "cover.png");
+  const finalVideo = path.join(paths.results, folderPrefix, "final_video.mp4");
 
   // Obtendo a duração do áudio
   const audioDuration = await getMediaDuration(audio);

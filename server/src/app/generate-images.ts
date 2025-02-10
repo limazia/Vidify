@@ -1,6 +1,5 @@
 import path from "node:path";
 
- 
 import { searchImages } from "@/shared/utils/search-images";
 import { downloadImage } from "@/shared/utils/download-image";
 import { paths } from "@/shared/config/paths";
@@ -15,7 +14,8 @@ export async function generateImages({ query, id }: GenerateImage) {
     const images = await searchImages({ query });
 
     if (images.length > 0) {
-      const dir = path.join(paths.results, id);
+      const folderPrefix = `video_${id}`;
+      const dir = path.join(paths.results, folderPrefix);
 
       const img = images[0];
       const imgName = "cover_background.jpg";

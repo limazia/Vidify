@@ -25,7 +25,7 @@ export async function getVideos({
   query = "",
   pageIndex = 1,
   itemsPerPage = 10,
-  sortOrder = "alphabetical",
+  sortOrder = "creation",
 }: GetVideosParams) {
   const { data } = await api.get<GetVideosResponse>("/videos", {
     params: {

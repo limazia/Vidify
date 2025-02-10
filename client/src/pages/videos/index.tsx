@@ -11,6 +11,13 @@ import { VideoCard } from "./video-card";
 import { Pagination } from "@/components/pagination";
 import { FilterBar } from "@/components/filter-bar";
 
+interface PayloadVideoStatus {
+  id: string;
+  state: string;
+  message: string;
+  cover: string;
+}
+
 export function Videos() {
   const { videos, isLoadingVideos, isErrorVideos } = useVideos();
   const { pageIndex, setPageIndex } = useFilter();
@@ -24,8 +31,13 @@ export function Videos() {
       console.log("Socket disconnected");
     }
 
-    async function onVideoStatusEvent() {
-      console.log("Video status event");
+    async function onVideoStatusEvent({
+      id,
+      state,
+      message,
+      cover,
+    }: PayloadVideoStatus) {
+      console.log("Video status event", id, state, message, cover);
     }
 
     socket.on("connect", onConnect);
@@ -35,7 +47,7 @@ export function Videos() {
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.off("video:status", onVideoStatusEvent);
+      socket.off("video-status", onVideoStatusEvent);
     };
   }, []);
 
@@ -57,13 +69,9 @@ export function Videos() {
         {isErrorVideos && !videos && <VideoSkeleton />}
 
         {videos &&
-          videos?.data
-            ?.sort(
-              (a, b) =>
-                new Date(b.created_at).getTime() -
-                new Date(a.created_at).getTime()
-            )
-            ?.map((video) => <VideoCard key={video.id} video={video} />)}
+          videos?.data?.map((video) => (
+            <VideoCard key={video.id} video={video} />
+          ))}
       </div>
 
       {videos && videos.data.length !== 0 && (

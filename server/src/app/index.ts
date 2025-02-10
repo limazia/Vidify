@@ -5,18 +5,20 @@ import { buildSubtitle } from "./build-subtitle";
 import { buildVideo } from "./build-video";
 import { generateAudio } from "./generate-audio";
 import { generateContent } from "./generate-content";
+import { generateSubtitle } from "./generate-subtitles";
 import { generateImages } from "./generate-images";
 import { generateCover } from "./generate-cover";
-import { generateSubtitle } from "./generate-subtitles";
 import { sendVideoEvent } from "./send-event";
 
+import { env } from "@/shared/config/env";
+import { Model } from "@/shared/types/model";
 import { SpeechBase } from "@/shared/types/speech-base";
 import { base64Encode } from "@/shared/utils";
 import { paths } from "@/shared/config/paths";
 
-export async function videoGenerator(id: string, term: string, model: string) {
+export async function videoGenerator(id: string, term: string, model: Model) {
   const config: SpeechBase = {
-    OutputS3BucketName: "dark-audio-generated",
+    OutputS3BucketName: env.AWS_BUCKET,
     Engine: "neural",
     LanguageCode: "pt-BR",
     TextType: "ssml",
@@ -34,7 +36,8 @@ export async function videoGenerator(id: string, term: string, model: string) {
     message: "Gerando conteúdo",
   });
 
-  const content = await generateContent({ term });
+  const content = await generateContent({ id, term, model });
+
   if (!content) {
     console.log("Content not generated");
 

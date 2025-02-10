@@ -14,10 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { SearchInput } from "./filter-search";
- 
 
 export function FilterBar() {
-  const { sortOrder, setSortOrder, itemsPerPage, setItemsPerPage, setPageIndex } = useFilter();
+  const {
+    sortOrder,
+    setSortOrder,
+    itemsPerPage,
+    setItemsPerPage,
+    setPageIndex,
+  } = useFilter();
 
   function handleFilter(data: { sortOrder?: string; itemsPerPage?: string }) {
     if (data.sortOrder) {
@@ -26,18 +31,18 @@ export function FilterBar() {
     if (data.itemsPerPage) {
       setItemsPerPage(data.itemsPerPage);
     }
-   
+
     setPageIndex("1");
   }
 
   const sortOrderText = {
-    alphabetical: "A-Z",
     creation: "Mais novo primeiro",
+    alphabetical: "A-Z",
   };
 
   const sortOrderLabel = {
-    alphabetical: "Alfabética",
     creation: "Data de criação",
+    alphabetical: "Alfabética",
   } as const;
 
   return (
@@ -60,11 +65,11 @@ export function FilterBar() {
                 value={sortOrder}
                 onValueChange={(value) => handleFilter({ sortOrder: value })}
               >
-                <DropdownMenuRadioItem value="alphabetical">
-                  Alfabética
-                </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="creation">
                   Data de criação
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="alphabetical">
+                  Alfabética
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>

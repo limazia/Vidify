@@ -9,15 +9,16 @@ import { SpeechBase } from "@/shared/types/speech-base";
 import { polly, s3 } from "@/shared/lib/aws";
 import { paths } from "@/shared/config/paths";
 
-type GenerateSubtitle = {
+interface GenerateSubtitle {
   text: string;
   id: string;
   config: SpeechBase;
-};
+}
 
 export async function generateSubtitle({ text, id, config }: GenerateSubtitle) {
   try {
-    const keyPrefix = `audios/${id}/`;
+    const folderPrefix = `video_${id}`;
+    const keyPrefix = `audios/${folderPrefix}/`;
 
     const params: StartSpeechSynthesisTaskCommandInput = {
       ...config,
@@ -48,7 +49,7 @@ export async function generateSubtitle({ text, id, config }: GenerateSubtitle) {
       const audioWebStream =
         (await s3response.Body.transformToByteArray()) as Buffer;
 
-      const filePath = `${paths.results}/${id}/subtitles.marks`;
+      const filePath = `${paths.results}/${folderPrefix}/subtitles.marks`;
 
       await fs.writeFile(filePath, Buffer.from(audioWebStream));
     } catch (err) {

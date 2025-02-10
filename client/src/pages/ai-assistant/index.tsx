@@ -3,10 +3,10 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import qs from "qs";
 
 import { generateVideo } from "@/shared/http/generate-video";
 import { formSchema, FormSchema } from "@/shared/schemas/form-assistant";
+import { defaultModel } from "@/shared/models";
 
 import { Form } from "./form";
 import { SuggestionCard } from "./suggestion-card";
@@ -16,19 +16,16 @@ export function AIAssistant() {
 
   const methods = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      term: "",
-      model: "gpt-turbo",
-    },
     mode: "onChange",
+    defaultValues: {
+      model: defaultModel,
+    },
   });
 
   const { mutate: generateVideoMutationFn } = useMutation({
     mutationFn: generateVideo,
-    onSuccess: ({ id: chatId }) => {
-      const queryParams = qs.stringify({ video: chatId });
-
-      navigate(`/videos?${queryParams}`);
+    onSuccess: () => {
+      navigate("/videos");
     },
     onError: () => {
       toast.error("Erro ao gerar o vídeo, tente novamente mais tarde");

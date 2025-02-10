@@ -1,4 +1,6 @@
+import { connection } from "./../database/index";
 import { openai } from "@/shared/lib/openai";
+import { Model } from "@/shared/types/model";
 
 interface GenerateContentReturn {
   title: string;
@@ -8,22 +10,34 @@ interface GenerateContentReturn {
 }
 
 interface GenerateContentParams {
+  id: string;
   term: string;
+  model: Model;
 }
 
-export async function generateContent({ term }: GenerateContentParams) {
+export async function generateContent({
+  id,
+  term,
+  model,
+}: GenerateContentParams) {
   try {
     const result = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model,
       messages: [
         {
           role: "system",
           content:
-            "You are an AI assistant trained to provide a wide variety of responses on topics such as nature, the world, cars, people, and more.",
+            "You are an AI assistant trained to provide a wide range of answers on topics such as nature, the world, cars, people, and more.",
         },
         {
           role: "user",
-          content: `Explain "${term}", its purpose, and provide examples of use. All answers should be in Portuguese and maintain a polite tone, as this content will be used in a social media video. At the end of the explanation, invite viewers to follow for more tips and to leave a comment.`,
+          content: `Explain the term "${term}", its purpose, and provide practical examples of its use. All answers should be in Portuguese and maintain a polite and friendly tone, as this content will be used in a video for social media. The explanation should include:
+          
+          - A clear and concise definition of the term.
+          - A description of how the term is used in everyday or specific context.
+          - At least three clear and relevant examples that illustrate the use of the term.
+          
+          At the end of the explanation, invite viewers to follow the channel for more tips and to leave comments with their questions or suggestions. Make sure the text is engaging and informative to keep the audience interested.`,
         },
       ],
       functions: [
@@ -72,6 +86,15 @@ export async function generateContent({ term }: GenerateContentParams) {
     console.log(args);
 
     args.narration = args.narration.replace(/```[\s\S]*?```/g, "");
+
+    await connection("videos")
+      .update({
+        term: args.title,
+        road_map: args.narration,
+        tags: args.tags.join(","),
+        image_query: args.imageQuery,
+      })
+      .where({ id });
 
     return args as GenerateContentReturn;
   } catch (error: unknown) {

@@ -44,7 +44,6 @@ export function SuggestionCard() {
 
   const handleCardClick = (text: string) => {
     setValue("term", text, { shouldDirty: true });
-    setValue("model", "gpt-turbo", { shouldDirty: true });
     trigger();
   };
 

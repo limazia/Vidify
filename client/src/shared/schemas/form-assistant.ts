@@ -1,14 +1,9 @@
 import { z } from "zod";
-
-const availableModels = [
-  "gpt-turbo",
-  "gemini",
-  "claude"
-] as const;
+import { availableModelsArray } from "../models";
 
 export const formSchema = z.object({
   term: z.string().min(5),
-  model: z.enum(availableModels)
+  model: z.enum(availableModelsArray),
 });
 
 export type FormSchema = z.infer<typeof formSchema>;

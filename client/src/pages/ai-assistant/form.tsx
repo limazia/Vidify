@@ -3,6 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { ArrowRight, Loader2, X, Globe, ChevronDown } from "lucide-react";
 
 import { cn } from "@/shared/utils/cn";
+import { availableModels } from "@/shared/models";
 
 import {
   DropdownMenu,
@@ -17,12 +18,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 const PROMPT_MAX_LENGTH = 600;
-
-const availableModels: { model: string; name: string; disabled?: boolean }[] = [
-  { model: "gpt-turbo", name: "ChatGPT 3.5 Turbo" },
-  { model: "gemini", name: "Gemini 1.5 Flash" },
-  { model: "claude", name: "Claude 3" },
-];
 
 interface FormProps {
   onSubmit: (data: any) => Promise<void>;
@@ -55,7 +50,8 @@ export function Form({ onSubmit }: FormProps) {
     trigger();
   };
 
-  const selectedModelName = availableModels.find(m => m.model === selectedModel)?.name || "Modelo";
+  const selectedModelName =
+    availableModels.find((m) => m.model === selectedModel)?.name || "Modelo";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">

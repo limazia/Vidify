@@ -1,0 +1,19 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 384
+PlayResY: 288
+ScaledBorderAndShadow: yes
+YCbCr Matrix: None
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,15,&H00FFFF&,&Hffffff,&H0,&H0,0,1,0,0,100,100,0,0,1,1,0,2,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.03,0:00:02.83,Default,,0000,0000,0000,,Olá gamers Hoje vamos explorar o\Nfascinante mundo das
+Dialogue: 0,0:00:02.92,0:00:06.00,Default,,0000,0000,0000,,curiosidades sobre o universo dos\Ngames Essas curiosidades são
+Dialogue: 0,0:00:06.10,0:00:08.45,Default,,0000,0000,0000,,fatos interessantes e surpreendentes\Nque envolvem os jogos
+Dialogue: 0,0:00:08.55,0:00:11.12,Default,,0000,0000,0000,,eletrônicos desde informações sobre\Npersonagens até detalhes
+Dialogue: 0,0:00:11.22,0:00:13.97,Default,,0000,0000,0000,,dos bastidores da indústria Vamos\Nmergulhar nesse universo
+Dialogue: 0,0:00:14.07,0:00:15.90,Default,,0000,0000,0000,,cheio de segredos e descobertas

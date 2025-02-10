@@ -1,3 +1,7 @@
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:4000");
+import { env } from "@/env";
+
+export const socket = io(env.VITE_SOCKET_URL, {
+  transports: ["websocket"],
+});

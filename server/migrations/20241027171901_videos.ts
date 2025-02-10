@@ -4,7 +4,9 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("videos", (table: Knex.TableBuilder) => {
     table.uuid("id").primary().notNullable().unique();
     table.string("term").notNullable();
+    table.text("road_map");
     table.string("tags");
+    table.string("image_query");
 
     table.timestamp("updated_at").defaultTo(knex.raw("CURRENT_TIMESTAMP"));
     table.timestamp("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP"));

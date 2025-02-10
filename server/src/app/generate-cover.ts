@@ -1,6 +1,5 @@
-import Jimp from "jimp";
+import { Jimp } from "jimp";
 
-import { buildCover } from "./build-cover";
 import { paths } from "@/shared/config/paths";
 
 interface GenerateCover {
@@ -10,14 +9,12 @@ interface GenerateCover {
 
 export async function generateCover({ id, title }: GenerateCover) {
   try {
-    const png = await buildCover({
-      id,
-      title,
-    });
+    const folderPrefix = `video_${id}`;
+    const png = null;
 
     const cover = await Jimp.read(Buffer.from(png));
 
-    cover.write(`${paths.results}/${id}/cover.png`);
+    cover.write(`${paths.results}/${folderPrefix}/cover.png`);
   } catch (error) {
     console.error(error);
   }

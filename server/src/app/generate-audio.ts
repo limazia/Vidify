@@ -18,7 +18,8 @@ type GenerateAudio = {
 
 export async function generateAudio({ text, id, config }: GenerateAudio) {
   try {
-    const keyPrefix = `audios/${id}/`;
+    const folderPrefix = `video_${id}`;
+    const keyPrefix = `audios/${folderPrefix}/`;
 
     const params: StartSpeechSynthesisTaskCommandInput = {
       ...config,
@@ -48,7 +49,7 @@ export async function generateAudio({ text, id, config }: GenerateAudio) {
       const audioWebStream =
         (await s3response.Body.transformToByteArray()) as Buffer;
 
-      const filePath = `${paths.results}/${id}/audio.mp3`;
+      const filePath = `${paths.results}/${folderPrefix}/audio.mp3`;
 
       await fs.writeFile(filePath, Buffer.from(audioWebStream));
     } catch (err) {

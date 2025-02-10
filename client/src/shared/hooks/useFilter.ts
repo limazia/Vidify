@@ -9,8 +9,8 @@ export function useFilter() {
           parse: (value) => value || "",
         },
         sortOrder: {
-          defaultValue: "alphabetical",
-          parse: (value) => value || "alphabetical",
+          defaultValue: "creation",
+          parse: (value) => value || "creation",
         },
         itemsPerPage: {
           defaultValue: "10",

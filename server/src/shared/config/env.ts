@@ -25,15 +25,14 @@ const envSchema = z.object({
     .url(),
 
   AWS_REGION: z.string().min(1),
+  AWS_BUCKET: z.string().min(1),
   AWS_ACCESS_KEY_ID: z.string().min(1),
   AWS_SECRET_ACCESS_KEY: z.string().min(1),
 
   OPENAI_API_KEY: z.string().min(1),
-  GEMINI_API_KEY: z.string().min(1),
-  CLAUDE_API_KEY: z.string().min(1),
  
   UNSPLASH_API_URL: z.string().url(),
-  UNSPLASH_API_TOKEN: z.string().min(1),
+  UNSPLASH_ACCESS_KEY: z.string().min(1),
 });
 
 export const env = envSchema.parse(process.env);

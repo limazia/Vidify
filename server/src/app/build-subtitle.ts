@@ -108,19 +108,29 @@ export async function styleFontAss(filePath: string) {
 }
 
 export async function buildSubtitle(id: string) {
-  const filePathMarks = `${paths.results}/${id}/subtitles.marks`;
+  try {
+    const folderPrefix = `video_${id}`;
+    const filePathMarks = `${paths.results}/${folderPrefix}/subtitles.marks`;
 
-  const marks = await getMarks(filePathMarks);
+    const marks = await getMarks(filePathMarks);
 
-  const captions = createCaptions(marks);
+    const captions = createCaptions(marks);
 
-  await fs.writeFile(`${paths.results}/${id}/captions.srt`, captions);
+    await fs.writeFile(
+      `${paths.results}/${folderPrefix}/captions.srt`,
+      captions
+    );
 
-  const outputAss = `${paths.results}/${id}/captions.ass`;
+    const outputAss = `${paths.results}/${folderPrefix}/captions.ass`;
 
-  await exec(`ffmpeg -i ${paths.results}/${id}/captions.srt ${outputAss}`);
+    await exec(
+      `ffmpeg -i ${paths.results}/${folderPrefix}/captions.srt ${outputAss}`
+    );
 
-  await styleFontAss(outputAss);
+    await styleFontAss(outputAss);
 
-  return captions;
+    return captions;
+  } catch (error) {
+    console.error("Falha ao executar ffmpeg:", error);
+  }
 }
