@@ -30,10 +30,11 @@ class VideoController {
 
   async store(request: Request, response: Response) {
     // #swagger.tags = ['Video']
-    const { term, model } = request.body;
+    const { prompt, model } = request.body;
 
     try {
-      const { id } = await videoService.generate(term, model);
+      const { id } = await videoService.generate(prompt, model);
+
       response.status(200).json({ id });
     } catch (error) {
       throw new HttpError("Failed to generate video", 500, "error", "video_generate_error");

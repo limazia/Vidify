@@ -1,4 +1,4 @@
-import { connection } from "./../database/index";
+import { connection } from "../database/index";
 import { openai } from "@/shared/lib/openai";
 import { Model } from "@/shared/types/model";
 
@@ -6,18 +6,18 @@ interface GenerateContentReturn {
   title: string;
   narration: string;
   tags: string[];
-  imageQuery: string;
+  imagePrompt: string;
 }
 
 interface GenerateContentParams {
   id: string;
-  term: string;
+  prompt: string;
   model: Model;
 }
 
 export async function generateContent({
   id,
-  term,
+  prompt,
   model,
 }: GenerateContentParams) {
   try {
@@ -31,7 +31,7 @@ export async function generateContent({
         },
         {
           role: "user",
-          content: `Explain the term "${term}", its purpose, and provide practical examples of its use. All answers should be in Portuguese and maintain a polite and friendly tone, as this content will be used in a video for social media. The explanation should include:
+          content: `Explain the term "${prompt}", its purpose, and provide practical examples of its use. All answers should be in Portuguese and maintain a polite and friendly tone, as this content will be used in a video for social media. The explanation should include:
           
           - A clear and concise definition of the term.
           - A description of how the term is used in everyday or specific context.
@@ -64,10 +64,10 @@ export async function generateContent({
                   type: "string",
                 },
               },
-              imageQuery: {
+              imagePrompt: {
                 type: "string",
                 description:
-                  "Take the context of the narration and return it to me with a single word image query so that I can search for an image, but I need the context to be 100% accurate and in English.",
+                  "Take the context of the narration and return it to me with prompt so that I can generate an image based on the context of the narration",
               },
             },
           },
@@ -89,10 +89,10 @@ export async function generateContent({
 
     await connection("videos")
       .update({
-        term: args.title,
-        road_map: args.narration,
+        prompt,
+        title: args.title,
+        narration: args.narration,
         tags: args.tags.join(","),
-        image_query: args.imageQuery,
       })
       .where({ id });
 

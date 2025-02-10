@@ -1,5 +1,5 @@
 import { redisClient } from "@/shared/lib/redis";
-import { videoGenerator } from "@/app/index";
+import { videoGenerator } from "@/services/index";
 import { Logger } from "@/shared/utils/logger";
 import { Worker } from "bullmq";
 
@@ -9,10 +9,10 @@ export const videoWorker = new Worker(
   "video-processing",
   async (job) => {
     try {
-      const { term, id } = job.data;
+      const { title, id } = job.data;
       logger.info(`Iniciando processamento do vídeo: ${job.data.videoPath}`);
 
-      await videoGenerator(term, id);
+      await videoGenerator(title, id);
 
       return { status: "success" };
     } catch (error) {

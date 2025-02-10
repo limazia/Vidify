@@ -2,7 +2,7 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("video_files", (table: Knex.TableBuilder) => {
-    table.string("id").primary().notNullable().unique();
+    table.uuid("id").primary().notNullable().unique();
     table.string("cover_url");
     table.string("video_url");
     table.integer("width");
@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("type");
 
     table
-      .string("video_id")
+      .uuid("video_id")
       .notNullable()
       .references("id")
       .inTable("videos")

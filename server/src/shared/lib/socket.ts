@@ -9,14 +9,14 @@ export function initializeSocket(server: any) {
   });
 
   if (!io) {
-    throw new Error("Socket.io has not been initialized!");
+    throw new Error("🔌 Socket.io has not been initialized!");
   }
 
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
+    console.log("🔌 User connected:", socket.id);
 
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+      console.log("🔌 User disconnected:", socket.id);
     });
   });
 

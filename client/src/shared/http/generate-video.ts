@@ -2,12 +2,12 @@ import { api } from "@/shared/lib/axios";
 
 export interface GenerateVideoRequest {
   id: string;
-  term: string;
+  prompt: string;
   model: string;
 }
 
 export async function generateVideo(payload: {
-  term: string;
+  prompt: string;
   model: string;
 }): Promise<GenerateVideoRequest> {
   const { data } = await api.post("/video", payload);

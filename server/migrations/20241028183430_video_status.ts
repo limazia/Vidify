@@ -2,13 +2,14 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("video_status", (table: Knex.TableBuilder) => {
-    table.string("id").primary().notNullable().unique();
+    table.uuid("id").primary().notNullable().unique();
     table
       .enu("state", ["pending", "processing", "failed", "finished"])
       .notNullable();
     table.string("message");
+    
     table
-      .string("video_id")
+      .uuid("video_id")
       .notNullable()
       .references("id")
       .inTable("videos")

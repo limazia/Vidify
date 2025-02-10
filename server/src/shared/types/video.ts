@@ -23,8 +23,9 @@ interface VideoStatus {
 
 export interface Video {
   id: string;
-  term: string;
-  road_map: string;
+  prompt: string;
+  title: string;
+  narration: string;
   tags: string[];
   file?: VideoFile;
   status: VideoStatus;

@@ -17,12 +17,9 @@ const envSchema = z.object({
       required_error: "Missing DATABASE_URL in environment variables",
     })
     .url(),
-  REDIS_URL: z
-    .string({
-      invalid_type_error: "REDIS_URL must be a string",
-      required_error: "Missing REDIS_URL in environment variables",
-    })
-    .url(),
+
+  REDIS_HOST: z.string().min(1),
+  REDIS_PORT: z.coerce.number().default(6379),
 
   AWS_REGION: z.string().min(1),
   AWS_BUCKET: z.string().min(1),
@@ -30,7 +27,7 @@ const envSchema = z.object({
   AWS_SECRET_ACCESS_KEY: z.string().min(1),
 
   OPENAI_API_KEY: z.string().min(1),
- 
+
   UNSPLASH_API_URL: z.string().url(),
   UNSPLASH_ACCESS_KEY: z.string().min(1),
 });

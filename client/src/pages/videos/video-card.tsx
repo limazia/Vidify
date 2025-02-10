@@ -70,7 +70,7 @@ export function VideoCard({ video }: VideoCardProps) {
         <CardContent className="p-4 space-y-3">
           <div className="mt-3 space-y-2">
             <CardTitle className="text-md font-bold" title={video.id}>
-              {video.term}
+              {video.title}
             </CardTitle>
 
             <span className="text-gray-500 text-xs">

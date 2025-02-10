@@ -6,8 +6,9 @@ import { HttpError } from "@/http/errors/http-error";
 import { paths } from "@/shared/config/paths";
 import { ListParams, ListVideoResponse, Video } from "@/shared/types/video";
 import { connection } from "@/database";
-import { videoGenerator } from "@/app/index";
+import { videoGenerator } from "@/services/index";
 import { Model } from "@/shared/types/model";
+import { CacheService } from "./video.cache";
 
 interface SortOrder {
   column: string;
@@ -38,18 +39,18 @@ class VideoService {
       direction: "asc",
     };
 
-    // const cacheKey = CacheService.generateCacheKey({
-    //   query,
-    //   page,
-    //   perPage,
-    //   sortOrder,
-    // });
+    const cacheKey = CacheService.generateCacheKey({
+      query,
+      page,
+      perPage,
+      sortOrder,
+    });
 
-    // const cachedResult = await CacheService.getCache(cacheKey);
+    const cachedResult = await CacheService.getCache(cacheKey);
 
-    // if (cachedResult) {
-    //   return cachedResult;
-    // }
+    if (cachedResult) {
+      return cachedResult;
+    }
 
     try {
       const baseQuery = connection("videos")
@@ -58,7 +59,7 @@ class VideoService {
         .where((builder) => {
           builder
             .where(
-              connection.raw("LOWER(videos.term) LIKE ?", [
+              connection.raw("LOWER(videos.title) LIKE ?", [
                 `%${query.toLowerCase()}%`,
               ])
             )
@@ -75,7 +76,9 @@ class VideoService {
           .clone()
           .select(
             "videos.id",
-            "videos.term",
+            "videos.prompt",
+            "videos.title",
+            "videos.narration",
             "videos.tags",
             "video_files.cover_url",
             "video_files.video_url",
@@ -97,8 +100,9 @@ class VideoService {
 
       const videoData: Video[] = videos.map((v) => ({
         id: v.id ? v.id : null,
-        term: v.term ? v.term : null,
-        road_map: v.road_map ? v.road_map : null,
+        prompt: v.prompt ? v.prompt : null,
+        title: v.title ? v.title : null,
+        narration: v.narration ? v.narration : null,
         tags: v.tags ? v.tags.split(",").map((tag: string) => tag.trim()) : [],
         ...(v.status === "completed"
           ? {
@@ -130,7 +134,7 @@ class VideoService {
         },
       };
 
-      //await CacheService.setCache(cacheKey, result);
+      await CacheService.setCache(cacheKey, result);
 
       return result;
     } catch (err) {
@@ -139,14 +143,14 @@ class VideoService {
     }
   }
 
-  async generate(term: string, model: Model): Promise<{ id: string }> {
+  async generate(prompt: string, model: Model): Promise<{ id: string }> {
     const videoId = uuid();
 
     try {
       await connection.transaction(async (trx) => {
         await trx("videos").insert({
           id: videoId,
-          term,
+          prompt,
         });
 
         await trx("video_files").insert({
@@ -162,9 +166,9 @@ class VideoService {
 
         await trx.commit();
 
-        await videoGenerator(videoId, term, model);
+        await videoGenerator(videoId, prompt, model);
 
-        //await CacheService.invalidateCache();
+        await CacheService.invalidateCache();
       });
 
       return {
@@ -191,7 +195,7 @@ class VideoService {
       ]);
 
       console.log(`${dir} is deleted!`);
-      //await CacheService.invalidateCache();
+      await CacheService.invalidateCache();
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       throw err;

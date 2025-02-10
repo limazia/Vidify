@@ -43,7 +43,7 @@ export function SuggestionCard() {
   };
 
   const handleCardClick = (text: string) => {
-    setValue("term", text, { shouldDirty: true });
+    setValue("prompt", text, { shouldDirty: true });
     trigger();
   };
 

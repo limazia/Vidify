@@ -1,10 +1,10 @@
 import { videoQueue } from "@/shared/lib/bullmq";
 
-export async function addVideoJob(id: string, term: string) {
+export async function addVideoJob(id: string, title: string) {
   const job = await videoQueue.add(
     "process-video",
     {
-      term,
+      title,
       id,
     },
     {

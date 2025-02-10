@@ -6,7 +6,6 @@ import { buildVideo } from "./build-video";
 import { generateAudio } from "./generate-audio";
 import { generateContent } from "./generate-content";
 import { generateSubtitle } from "./generate-subtitles";
-import { generateImages } from "./generate-images";
 import { generateCover } from "./generate-cover";
 import { sendVideoEvent } from "./send-event";
 
@@ -16,7 +15,7 @@ import { SpeechBase } from "@/shared/types/speech-base";
 import { base64Encode } from "@/shared/utils";
 import { paths } from "@/shared/config/paths";
 
-export async function videoGenerator(id: string, term: string, model: Model) {
+export async function videoGenerator(id: string, prompt: string, model: Model) {
   const config: SpeechBase = {
     OutputS3BucketName: env.AWS_BUCKET,
     Engine: "neural",
@@ -36,7 +35,7 @@ export async function videoGenerator(id: string, term: string, model: Model) {
     message: "Gerando conteúdo",
   });
 
-  const content = await generateContent({ id, term, model });
+  const content = await generateContent({ id, prompt, model });
 
   if (!content) {
     console.log("Content not generated");
@@ -76,22 +75,13 @@ export async function videoGenerator(id: string, term: string, model: Model) {
 
   await buildSubtitle(id);
 
-  console.log("Downloading images");
-  await sendVideoEvent({
-    videoId: id,
-    state: "processing",
-    message: "Baixando imagens",
-  });
-
-  await generateImages({ query: content.imageQuery, id });
-
   console.log("Building cover");
   await sendVideoEvent({
     videoId: id,
     state: "processing",
     message: "Gerando capa",
   });
-  await generateCover({ id, title: content.title });
+  await generateCover({ prompt: content.imagePrompt, title: content.title });
 
   console.log("Putting all the parts of this video together");
   await sendVideoEvent({
@@ -111,5 +101,5 @@ export async function videoGenerator(id: string, term: string, model: Model) {
     cover,
   });
 
-  return { id, term };
+  return { id, prompt, model };
 }

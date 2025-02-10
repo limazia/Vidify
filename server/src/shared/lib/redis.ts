@@ -1,11 +1,10 @@
-/*
 import { Redis } from "ioredis";
 
 import { env } from "@/shared/config/env";
 
 const baseRedisConfig = {
-  host: env.REDIS_URL,
-  port: 6379,
+  host: env.REDIS_HOST || "localhost",
+  port: Number(env.REDIS_PORT) || 6379,
   maxRetriesPerRequest: null,
   retryStrategy(times: number) {
     const delay = Math.min(times * 50, 2000);
@@ -18,18 +17,6 @@ const baseRedisConfig = {
     }
     return false;
   },
-};
-
-export const beeQueueConfig = {
-  removeOnSuccess: true,
-  redis: baseRedisConfig,
-};
-
-export const createQueueConfig = (customConfig = {}) => {
-  return {
-    ...beeQueueConfig,
-    ...customConfig,
-  };
 };
 
 export const createRedisClient = () => {
@@ -55,5 +42,3 @@ export const createRedisClient = () => {
 };
 
 export const redisClient = createRedisClient();
-export const redisConfig = baseRedisConfig;
-*/

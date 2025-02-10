@@ -35,7 +35,7 @@ export function Form({ onSubmit }: FormProps) {
     formState: { isSubmitting, isDirty, isValid },
   } = useFormContext();
 
-  const termValue = watch("term");
+  const prompt = watch("prompt");
   const selectedModel = watch("model");
 
   const handleOpenModel = () => setOpenModel((prev) => !prev);
@@ -46,7 +46,7 @@ export function Form({ onSubmit }: FormProps) {
   };
 
   const handleClear = () => {
-    setValue("term", "", { shouldDirty: true });
+    setValue("prompt", "", { shouldDirty: true });
     trigger();
   };
 
@@ -62,7 +62,7 @@ export function Form({ onSubmit }: FormProps) {
             className="w-full h-[140px] bg-transparent border-none focus:border-none shadow-none outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-normal text-black/80 placeholder:text-gray-400 resize-none text-base"
             maxLength={PROMPT_MAX_LENGTH}
             disabled={isSubmitting}
-            {...register("term")}
+            {...register("prompt")}
           />
           <div className="w-full flex items-center justify-between p-2">
             <DropdownMenu open={openModel} onOpenChange={setOpenModel}>
@@ -103,7 +103,7 @@ export function Form({ onSubmit }: FormProps) {
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="flex items-center gap-2">
-              {termValue && (
+              {prompt && (
                 <Button
                   variant="link"
                   className="text-gray-400 hover:text-black focus:text-black"
@@ -113,7 +113,7 @@ export function Form({ onSubmit }: FormProps) {
                 </Button>
               )}
               <span className="text-sm font-medium text-gray-400 focus:text-black transition">
-                {termValue?.length || 0}/{PROMPT_MAX_LENGTH}
+                {prompt?.length || 0}/{PROMPT_MAX_LENGTH}
               </span>
               <Button
                 type="submit"

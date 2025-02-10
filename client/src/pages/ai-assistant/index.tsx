@@ -34,7 +34,7 @@ export function AIAssistant() {
 
   async function handleGenerateVideo(data: FormSchema) {
     try {
-      await generateVideoMutationFn(data);
+      generateVideoMutationFn(data);
     } catch (error) {
       console.error("Generate video error:", error);
     }

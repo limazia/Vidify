@@ -1,4 +1,3 @@
-/*
 import { redisClient } from "@/shared/lib/redis";
 import { ListParams, ListVideoResponse } from "@/shared/types/video";
 
@@ -37,4 +36,3 @@ export class CacheService {
     }
   }
 }
-*/
