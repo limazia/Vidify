@@ -27,9 +27,6 @@ const envSchema = z.object({
   AWS_SECRET_ACCESS_KEY: z.string().min(1),
 
   OPENAI_API_KEY: z.string().min(1),
-
-  UNSPLASH_API_URL: z.string().url(),
-  UNSPLASH_ACCESS_KEY: z.string().min(1),
 });
 
 export const env = envSchema.parse(process.env);

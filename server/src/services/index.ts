@@ -44,7 +44,7 @@ export async function videoGenerator(id: string, prompt: string, model: Model) {
 
   console.log("Building cover");
 
-  await generateCover({ prompt: content.imagePrompt, title: content.title });
+  await generateCover({ id, prompt: content.imagePrompt, title: content.title });
 
   return { id, prompt, model };
 }

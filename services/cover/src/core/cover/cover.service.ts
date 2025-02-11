@@ -1,9 +1,19 @@
 import puppeteer, { BoundingBox } from "puppeteer";
 import path from "node:path";
+import fs from "node:fs";
 import ejs from "ejs";
+import { base64Encode } from "@/utils/base64-encode";
 
 class CoverService {
-  async generate({ title, image }: { title: string; image: string }) {
+  async generate({
+    id,
+    title,
+    image,
+  }: {
+    id: string;
+    title: string;
+    image: string;
+  }) {
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -12,6 +22,14 @@ class CoverService {
       const page = await browser.newPage();
       const template = path.resolve(process.cwd(), "views", "cover.ejs");
       const selector = "#content";
+
+      const folderPrefix = `video_${id}`;
+      const folderPath = path.join(process.cwd(), "_temp", folderPrefix);
+      const filePath = path.join(folderPath, "cover.jpg");
+
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
+      }
 
       const htmlContent = await ejs.renderFile(template, { title, image });
       await page.setContent(htmlContent);
@@ -37,15 +55,15 @@ class CoverService {
         if (body) body.style.background = "none";
       });
 
-      const cover = await page.screenshot({
-        path: "cover.png",
+      await page.screenshot({
+        path: filePath,
         clip,
         omitBackground: true,
       });
 
       await browser.close();
 
-      return cover;
+      return { image: base64Encode(filePath) };
     } finally {
       await browser.close();
     }

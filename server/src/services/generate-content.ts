@@ -20,6 +20,10 @@ export async function generateContent({
   prompt,
   model,
 }: GenerateContentParams) {
+  if (!id || !prompt || !model) {
+    throw new Error("id, prompt and model are required");
+  }
+
   try {
     const result = await openai.chat.completions.create({
       model,
@@ -49,7 +53,7 @@ export async function generateContent({
             properties: {
               title: {
                 type: "string",
-                description: "title of term to be explained. Only one word",
+                description: "create a title with the prompt and context",
               },
               narration: {
                 type: "string",
@@ -59,7 +63,7 @@ export async function generateContent({
               tags: {
                 type: "array",
                 description:
-                  "tags with the benefits of using this term. Each tag is only one word",
+                  "create tags based on title and narration (maximum 4 and all lowercase)",
                 items: {
                   type: "string",
                 },

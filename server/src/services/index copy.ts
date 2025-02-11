@@ -9,20 +9,12 @@ import { generateSubtitle } from "./generate-subtitles";
 import { generateCover } from "./generate-cover";
 import { sendVideoEvent } from "./send-event";
 
-import { env } from "@/shared/config/env";
 import { Model } from "@/shared/types/model";
-import { SpeechBase } from "@/shared/types/speech-base";
 import { base64Encode } from "@/shared/utils";
 import { paths } from "@/shared/config/paths";
+import { pollyConfig } from "@/shared/config/polly";
 
 export async function videoGenerator(id: string, prompt: string, model: Model) {
-  const config: SpeechBase = {
-    OutputS3BucketName: env.AWS_BUCKET,
-    Engine: "neural",
-    LanguageCode: "pt-BR",
-    TextType: "ssml",
-    VoiceId: "Thiago",
-  };
   const dir = path.join(paths.results, `video_${id}`);
 
   console.log(`Creating directory ${dir}`);
@@ -62,8 +54,8 @@ export async function videoGenerator(id: string, prompt: string, model: Model) {
   });
 
   await Promise.all([
-    generateAudio({ id, config, text }),
-    generateSubtitle({ id, config, text }),
+    generateAudio({ id, config: pollyConfig, text }),
+    generateSubtitle({ id, config: pollyConfig, text }),
   ]);
 
   console.log("Building subtitle");
@@ -92,7 +84,7 @@ export async function videoGenerator(id: string, prompt: string, model: Model) {
   await buildVideo(id);
 
   console.log("Video generated");
-  const cover = base64Encode(`${dir}/cover_background.jpg`);
+  const cover = base64Encode(`${dir}/cover.jpg`);
 
   await sendVideoEvent({
     videoId: id,

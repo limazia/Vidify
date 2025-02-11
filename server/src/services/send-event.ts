@@ -40,7 +40,7 @@ export async function sendVideoEvent({
         .merge();
     }
   } catch (err) {
-    console.error(`Error: ${(err as Error).message}`);
+    console.error("Error sending video event:", (err as Error).message);
     throw err;
   }
 }

@@ -39,28 +39,25 @@ export async function generateSubtitle({ text, id, config }: GenerateSubtitle) {
       Key: `${keyPrefix}.${pollyResponse.SynthesisTask?.TaskId}.marks`,
     });
 
-    try {
-      const s3response = await s3.send(s3command);
+    const s3response = await s3.send(s3command);
 
-      if (!s3response.Body) {
-        throw new Error("Body is empty");
-      }
-      // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
-      const audioWebStream =
-        (await s3response.Body.transformToByteArray()) as Buffer;
-
-      const filePath = `${paths.results}/${folderPrefix}/subtitles.marks`;
-
-      await fs.writeFile(filePath, Buffer.from(audioWebStream));
-    } catch (err) {
-      console.error(err);
+    if (!s3response.Body) {
+      throw new Error("Body is empty");
     }
+
+    const audioWebStream =
+      (await s3response.Body.transformToByteArray()) as Buffer;
+
+    const filePath = `${paths.results}/${folderPrefix}/subtitles.marks`;
+
+    await fs.writeFile(filePath, Buffer.from(audioWebStream));
 
     return {
       s3uri: pollyResponse.SynthesisTask?.OutputUri,
       taskId: pollyResponse.SynthesisTask?.TaskId,
     };
   } catch (err) {
-    console.error(err);
+    console.error("Error generating subtitle:", (err as Error).message);
+    throw err;
   }
 }

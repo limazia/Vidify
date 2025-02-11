@@ -4,20 +4,21 @@ import { coverService } from "./cover.service";
 
 class CoverController {
   async store(request: Request, response: Response) {
-    const { title, image } = request.body;
+    const { id, title, image: background } = request.body;
 
-    if (!title || !image) {
+    if (!id || !title || !background) {
       return response
         .status(400)
         .json({ error: "Título e imagem são obrigatórios" });
     }
 
-    const { cover } = await coverService.generate({
+    const { image } = await coverService.generate({
+      id,
       title,
-      image,
+      image: background,
     });
 
-    return response.json({ image: cover });
+    return response.json({ image });
   }
 
   async preview(request: Request, response: Response) {
