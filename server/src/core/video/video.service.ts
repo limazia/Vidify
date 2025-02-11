@@ -165,10 +165,8 @@ class VideoService {
         });
 
         await trx.commit();
-
-        await videoGenerator(videoId, prompt, model);
-
         await CacheService.invalidateCache();
+        await videoGenerator(videoId, prompt, model);
       });
 
       return {

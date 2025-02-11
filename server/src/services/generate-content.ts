@@ -67,9 +67,10 @@ export async function generateContent({
               imagePrompt: {
                 type: "string",
                 description:
-                  "Take the context of the narration and return it to me with prompt so that I can generate an image based on the context of the narration",
+                  "Analyze the context of the narration and generate a highly detailed prompt based on the subject so I can create an image in DALL·E. Ensure the description is extremely detailed to accurately depict the scene according to the text. Take into consideration the 'title,' 'narration,' 'tags,' and 'term' to craft a precise and vivid prompt",
               },
             },
+            required: ["title", "narration", "tags", "imagePrompt"],
           },
         },
       ],

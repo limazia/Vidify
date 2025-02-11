@@ -7,20 +7,41 @@ interface GenerateCoverParams {
 }
 
 export async function generateCover({ prompt, title }: GenerateCoverParams) {
-  const { data } = await openai.images.generate({
-    prompt,
-    model: "dall-e-2",
-    size: "1024x1024",
-    quality: "standard",
-    n: 1,
-  });
+  if (!prompt || !title) {
+    throw new Error("Prompt and title are required");
+  }
 
-  await axios.post("http://localhost:5001/cover", {
-    title,
-    image: data[0].url,
-  });
+  try {
+    const result = await openai.images.generate({
+      prompt,
+      model: "dall-e-2",
+      size: "1024x1024",
+      quality: "standard",
+      n: 1,
+    });
 
-  console.log(data[0].url);
+    // Validate API response
+    if (!result?.data?.[0]?.url) {
+      throw new Error("Invalid response from image generation API");
+    }
 
-  return data[0].url;
+    const image = result.data[0].url;
+    console.log("Generated image URL:", image);
+
+   
+    try {
+      await axios.post("http://localhost:5001/generate", {
+        title,
+        image,
+      });
+    } catch (postError) {
+      console.error("Failed to post cover data:", postError);
+    }
+ 
+
+    return image;
+  } catch (error) {
+    console.error("Error generating cover:", error);
+    throw error;
+  }
 }
