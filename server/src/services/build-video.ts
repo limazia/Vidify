@@ -6,19 +6,23 @@ import { paths } from "@/shared/config/paths";
 
 export async function buildVideo(id: string): Promise<void> {
   const folderPrefix = `video_${id}`;
-  const audio = path.join(paths.results, folderPrefix, "audio.mp3");
-  const subtitle = path.join(paths.results, folderPrefix, "captions.ass");
-  const cover = path.join(paths.results, folderPrefix, "cover.png");
-  const finalVideo = path.join(paths.results, folderPrefix, "final_video.mp4");
+  const folderPath = path.join(paths.results, folderPrefix);
+  
+  const files = {
+    audio: path.join(folderPath, "audio.mp3"),
+    subtitle: path.join(folderPath, "captions.ass"),
+    cover: path.join(folderPath, "cover.jpg"),
+    finalVideo: path.join(folderPath, "final_video.mp4")
+  };
 
   // Obtendo a duração do áudio
-  const audioDuration = await getMediaDuration(audio);
+  const audioDuration = await getMediaDuration(files.audio);
 
   return new Promise((resolve, reject) => {
     ffmpeg()
-      .input(cover)
+      .input(files.cover)
       .loop(1) // Loop da imagem de capa
-      .input(audio)
+      .input(files.audio)
       .audioFilter(`adelay=2000|2000`) // Atraso no áudio
       .videoFilter(
         `scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=5:5`
@@ -34,7 +38,7 @@ export async function buildVideo(id: string): Promise<void> {
         {
           filter: "ass",
           options: {
-            filename: subtitle.replace(/\\/g, "\\\\").replace(":", "\\:"),
+            filename: files.subtitle.replace(/\\/g, "\\\\").replace(":", "\\:"),
           },
         },
       ])
@@ -54,6 +58,6 @@ export async function buildVideo(id: string): Promise<void> {
         console.error("Erro ao construir vídeo:", err);
         reject(err); // Rejeita a Promise em caso de erro
       })
-      .save(finalVideo); // Salva o vídeo final
+      .save(files.finalVideo); // Salva o vídeo final
   });
 }

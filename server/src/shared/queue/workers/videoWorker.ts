@@ -1,5 +1,5 @@
 import { redisClient } from "@/shared/lib/redis";
-import { videoGenerator } from "@/services/index";
+import { videoGenerator } from "@/services/index_junior";
 import { Logger } from "@/shared/utils/logger";
 import { Worker } from "bullmq";
 

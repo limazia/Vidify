@@ -63,6 +63,12 @@ class CoverService {
 
       await browser.close();
 
+      setTimeout(() => {
+        fs.rmdirSync(folderPath, { recursive: true });
+
+        console.log(`Deleted folder: ${folderPath}`);
+      }, 1000 * 60 * 5);
+
       return { image: base64Encode(filePath) };
     } finally {
       await browser.close();

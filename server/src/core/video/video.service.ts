@@ -6,7 +6,7 @@ import { HttpError } from "@/http/errors/http-error";
 import { paths } from "@/shared/config/paths";
 import { ListParams, ListVideoResponse, Video } from "@/shared/types/video";
 import { connection } from "@/database";
-import { videoGenerator } from "@/services/index";
+import { videoGenerator } from "@/services";
 import { Model } from "@/shared/types/model";
 import { CacheService } from "./video.cache";
 

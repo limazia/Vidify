@@ -3,21 +3,13 @@ import { RefreshCw } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 import { cn } from "@/shared/utils/cn";
-import { categorizedSuggestions } from "@/shared/suggestions";
+import { randomSuggestions } from "@/shared/utils/random-suggestions";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const getRandomSuggestions = () => {
-  return categorizedSuggestions.map((category) => {
-    const randomItem =
-      category.items[Math.floor(Math.random() * category.items.length)];
-    return { name: category.name, icon: category.icon, text: randomItem };
-  });
-};
-
 export function SuggestionCard() {
-  const [prompts, setPrompts] = useState(getRandomSuggestions);
+  const [prompts, setPrompts] = useState(randomSuggestions);
   const [isSpinning, setIsSpinning] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -35,7 +27,7 @@ export function SuggestionCard() {
     if (isSpinning) return;
 
     setIsSpinning(true);
-    setPrompts(getRandomSuggestions());
+    setPrompts(randomSuggestions());
 
     timeoutRef.current = setTimeout(() => {
       setIsSpinning(false);
@@ -48,7 +40,7 @@ export function SuggestionCard() {
   };
 
   return (
-    <>
+    <div className="space-y-2">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {prompts.map((prompt, index) => (
           <Card
@@ -83,6 +75,6 @@ export function SuggestionCard() {
         />
         Atualizar prompts
       </Button>
-    </>
+    </div>
   );
 }
