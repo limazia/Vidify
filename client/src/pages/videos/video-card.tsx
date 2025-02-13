@@ -58,7 +58,7 @@ export function VideoCard({ video }: VideoCardProps) {
 
           {video?.status?.state !== "finished" && (
             <div className="w-full absolute left-4 top-4 flex flex-col">
-              <span className="font-semibold text-gray-500 text-xs uppercase">
+              <span className="font-semibold text-gray-700 text-xs uppercase">
                 Na fila
               </span>
               <span className="mt-4 absolute text-gray-500 text-xs">

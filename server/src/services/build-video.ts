@@ -14,7 +14,6 @@ const exec = promisify(execCallback);
 async function uploadToS3(id: string, videoBuffer: Buffer) {
   const key = `videos/video_${id}/final_video.mp4`;
 
-  // Upload the video to S3
   await s3.send(
     new PutObjectCommand({
       Bucket: "dark-audio-generated",
@@ -74,8 +73,10 @@ export async function buildVideo(id: string) {
     -vcodec libx264
     -preset ultrafast
     -acodec aac
-    ${files.finalVideo}
+    "${files.finalVideo}"
 `.replace(/(\n)/g, "");
+
+    console.log("FFmpeg command:", command);
 
     await exec(command);
   } catch (err) {

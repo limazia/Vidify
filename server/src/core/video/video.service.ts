@@ -1,6 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import { v4 as uuid } from "uuid";
+import {  DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import path from "node:path";
+import fs from "node:fs";
 
 import { HttpError } from "@/http/errors/http-error";
 import { paths } from "@/shared/config/paths";
@@ -9,6 +10,8 @@ import { connection } from "@/database";
 import { videoGenerator } from "@/services";
 import { Model } from "@/shared/types/model";
 import { CacheService } from "./video.cache";
+import { s3 } from "@/shared/lib/aws";
+import { env } from "@/shared/config/env";
 
 interface SortOrder {
   column: string;
@@ -49,9 +52,25 @@ class VideoService {
     const cachedResult = await CacheService.getCache(cacheKey);
 
     if (cachedResult) {
-      //return cachedResult;
+      // Check if there are new videos since the last cache update
+      const lastCachedVideoTime =
+        cachedResult.data.length > 0
+          ? new Date(cachedResult.data[cachedResult.data.length - 1].created_at)
+          : new Date(0); // fallback to epoch if no videos
+
+      const newVideosCount = await connection("videos")
+        .where("created_at", ">", lastCachedVideoTime)
+        .count("* as count")
+        .first();
+
+      if (Number(newVideosCount?.count) === 0) {
+        // No new videos, return cached result
+        return cachedResult;
+      }
+      // If there are new videos, proceed with a new query
     }
 
+    // If there's no cached result or there are new videos, perform a new query
     try {
       const baseQuery = connection("videos")
         .leftJoin("video_files", "videos.id", "video_files.video_id")
@@ -104,7 +123,7 @@ class VideoService {
         title: v.title ? v.title : null,
         narration: v.narration ? v.narration : null,
         tags: v.tags ? v.tags.split(",").map((tag: string) => tag.trim()) : [],
-        ...(v.status === "completed"
+        ...(v.state === "finished"
           ? {
               file: {
                 cover_url: v.cover_url || null,
@@ -179,20 +198,43 @@ class VideoService {
   }
 
   async delete(id: string): Promise<void> {
+    const folderPrefix = `video_${id}`;
+    const folderPath = path.join(paths.results, folderPrefix);
+
     const video = await connection("videos").where({ id }).first();
-    const dir = path.join(paths.results, id);
 
     if (!video) {
       throw new HttpError("Nenhum item foi encontrado com este id");
     }
 
     try {
-      Promise.all([
-        fs.promises.rm(dir, { recursive: true, force: true }),
+      const s3Prefix = `videos/video_${id}/`;
+      const listObjectsCommand = {
+        Bucket: env.AWS_BUCKET,
+        Prefix: s3Prefix,
+      };
+
+      const listedObjects = await s3.send(
+        new ListObjectsV2Command(listObjectsCommand)
+      );
+      const objectsToDelete =
+        listedObjects.Contents?.map((obj) => ({ Key: obj.Key })) || [];
+
+      if (objectsToDelete.length > 0) {
+        const deleteObjectsCommand = new DeleteObjectsCommand({
+          Bucket: env.AWS_BUCKET,
+          Delete: { Objects: objectsToDelete },
+        });
+
+        await s3.send(deleteObjectsCommand);
+      }
+
+      await Promise.all([
+        fs.promises.rm(folderPath, { recursive: true, force: true }),
         connection("videos").delete().where({ id }),
       ]);
 
-      console.log(`${dir} is deleted!`);
+      console.log(`${folderPath} and S3 folder ${s3Prefix} are deleted!`);
       await CacheService.invalidateCache();
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
@@ -201,16 +243,17 @@ class VideoService {
   }
 
   async download(id: string): Promise<string> {
-    const videoFilePath = path.join(
-      paths.results,
-      id,
-      "output_final_video.mp4"
-    );
+    const folderPrefix = `video_${id}`;
+    const folderPath = path.join(paths.results, folderPrefix);
+
+    const files = {
+      video: path.join(folderPath, "final_video.mp4"),
+    };
 
     try {
-      await fs.promises.access(videoFilePath);
+      await fs.promises.access(files.video);
 
-      return videoFilePath || "";
+      return files.video;
     } catch (err) {
       console.error(`Error: ${(err as Error).message}`);
       throw err;

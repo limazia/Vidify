@@ -101,7 +101,7 @@ export async function videoGenerator(id: string, prompt: string, model: Model) {
 
   await sendVideoEvent({
     videoId: id,
-    state: "completed",
+    state: "finished",
     message: "Seu vídeo foi gerado",
     cover: base64Encode(videoCover),
   });

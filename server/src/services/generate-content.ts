@@ -24,6 +24,8 @@ export async function generateContent({
     throw new Error("id, prompt and model are required");
   }
 
+  console.log("Model:", model);
+
   try {
     const result = await openai.chat.completions.create({
       model,
@@ -31,17 +33,24 @@ export async function generateContent({
         {
           role: "system",
           content:
-            "You are an AI assistant trained to provide a wide range of answers on topics such as nature, the world, cars, people, and more.",
+            "You are an AI professor specialized in a wide array of subjects like nature, the world, cars, people, and more. Your role is to educate, inspire, and engage your audience in a fun and informative learning environment. I want the answer in Brazilian Portuguese",
         },
         {
           role: "user",
-          content: `Explain the term "${prompt}", its purpose, and provide practical examples of its use. All answers should be in Portuguese and maintain a polite and friendly tone, as this content will be used in a video for social media. The explanation should include:
-          
-          - A clear and concise definition of the term.
-          - A description of how the term is used in everyday or specific context.
+          content: `Please explain the term "${prompt}", its purpose, and provide practical examples of its use. Maintain an educational, friendly, and engaging tone as this content will be used in a social media video. Your explanation should include:
+    
+          - A clear, concise definition of the term.
+          - A description of how the term is used in everyday or specific contexts.
           - At least three clear and relevant examples that illustrate the use of the term.
           
-          At the end of the explanation, invite viewers to follow the channel for more tips and to leave comments with their questions or suggestions. Make sure the text is engaging and informative to keep the audience interested.`,
+          Additionally, ensure your script includes:
+          
+          - An engaging introduction that captures attention, perhaps with a question or a surprising fact related to the term.
+          - A narrative flow that keeps viewers interested throughout the explanation, using storytelling or analogies where appropriate.
+          - Visual cues or suggestions for images or animations that could accompany the explanation to enhance understanding.
+          - A call to action at the end where you invite viewers to follow the channel for more insights, like and share the video, and leave comments with their questions or suggestions for future topics.
+          
+          Remember, you are not just informing but teaching, so every word should feel like a lesson. Make the topic accessible and exciting, sparking curiosity and a desire to learn more. Keep it light-hearted but informative, and ensure the language is simple yet enriching. Your goal is to make learning enjoyable and to encourage viewers to explore further on their own or through your channel.`,
         },
       ],
       functions: [
@@ -58,7 +67,7 @@ export async function generateContent({
               narration: {
                 type: "string",
                 description:
-                  "Text for tip narration in video. give examples of use. Welcome and explain like a teacher",
+                  "Text for tip narration in video. Provide a comprehensive explanation with multiple examples, analogies, and a narrative flow suitable for a 1 - 1:30 minute video segment. Welcome and explain like an engaging teacher, ensuring a substantial depth in content.",
               },
               tags: {
                 type: "array",
@@ -71,7 +80,7 @@ export async function generateContent({
               imagePrompt: {
                 type: "string",
                 description:
-                  "Analyze the context of the narration and generate a highly detailed prompt based on the subject so I can create an image in DALL·E. Ensure the description is extremely detailed to accurately depict the scene according to the text. Take into consideration the 'title,' 'narration,' 'tags,' and 'term' to craft a precise and vivid prompt",
+                  "Analyze the context of the narration and generate a highly detailed but concise prompt for an image in DALL·E, focusing on key visual elements. Ensure the description is detailed but brief.",
               },
             },
             required: ["title", "narration", "tags", "imagePrompt"],
@@ -81,7 +90,8 @@ export async function generateContent({
       function_call: {
         name: "generateContentForVideo",
       },
-      temperature: 0.1,
+      temperature: 0.6, // Adjusted for more creative but still focused output
+      max_tokens: 1000, // Increased from default to allow for longer responses
     });
 
     const choices = result.choices[0]!.message.function_call?.arguments;

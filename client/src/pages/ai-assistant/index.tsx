@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { generateVideo } from "@/shared/http/generate-video";
@@ -12,6 +12,7 @@ import { Form } from "./form";
 import { SuggestionCard } from "./suggestion-card";
 
 export function AIAssistant() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const methods = useForm<FormSchema>({
@@ -25,6 +26,10 @@ export function AIAssistant() {
   const { mutate: generateVideoMutationFn } = useMutation({
     mutationFn: generateVideo,
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["videos"],
+      });
+
       navigate("/videos");
     },
     onError: () => {
