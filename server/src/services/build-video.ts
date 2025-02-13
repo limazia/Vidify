@@ -12,12 +12,12 @@ import { paths } from "@/shared/config/paths";
 const exec = promisify(execCallback);
 
 async function uploadToS3(id: string, videoBuffer: Buffer) {
-  const key = `videos/video_${id}/final_video.mp4`;
+  const keyPrefix = `videos/video_${id}/final_video.mp4`;
 
   await s3.send(
     new PutObjectCommand({
       Bucket: "dark-audio-generated",
-      Key: key,
+      Key: keyPrefix,
       Body: videoBuffer,
       ContentType: "video/mp4",
     })
@@ -26,12 +26,12 @@ async function uploadToS3(id: string, videoBuffer: Buffer) {
   // Generate a presigned URL for downloading (expires in 24 hours)
   const getCommand = new GetObjectCommand({
     Bucket: "dark-audio-generated",
-    Key: key,
+    Key: keyPrefix,
   });
 
   const downloadUrl = await getSignedUrl(s3, getCommand, { expiresIn: 86400 });
 
-  const s3Uri = `s3://dark-audio-generated/${key}`;
+  const s3Uri = `s3://dark-audio-generated/${keyPrefix}`;
 
   return {
     s3Uri,

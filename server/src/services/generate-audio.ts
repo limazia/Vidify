@@ -20,10 +20,10 @@ export async function generateAudio({ id, text, config }: GenerateAudio) {
     throw new Error("id, text, and config are required");
   }
 
+  const folderPrefix = `video_${id}`;
+  const keyPrefix = `videos/video_${id}/`;
+  
   try {
-    const folderPrefix = `video_${id}`;
-    const keyPrefix = `audios/${folderPrefix}/`;
-
     const params: StartSpeechSynthesisTaskCommandInput = {
       ...config,
       OutputS3KeyPrefix: keyPrefix,

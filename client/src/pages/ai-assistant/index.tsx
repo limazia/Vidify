@@ -26,9 +26,7 @@ export function AIAssistant() {
   const { mutate: generateVideoMutationFn } = useMutation({
     mutationFn: generateVideo,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["videos"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["videos"] });
 
       navigate("/videos");
     },

@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { Download, Trash2 } from "lucide-react";
 import JsFileDownloader from "js-file-downloader";
 
-import { cn } from "@/shared/utils/cn";
 import { formatDate } from "@/shared/utils/format-date";
 import { Video } from "@/shared/interfaces/video";
 
@@ -21,20 +19,11 @@ interface VideoCardProps {
 }
 
 export function VideoCard({ video }: VideoCardProps) {
-  const { search } = useLocation();
   const [open, setOpen] = useState(false);
-
-  const params = new URLSearchParams(search);
-  const videoId = params.get("video");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Card
-        className={cn(
-          "w-full rounded-md",
-          videoId === video.id && "border-gray-500"
-        )}
-      >
+      <Card className="w-full rounded-md">
         <div className="relative flex items-center justify-center rounded-md">
           {video.status.state === "finished" ? (
             video.file?.cover_url ? (

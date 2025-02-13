@@ -6,10 +6,10 @@ import { useFilter } from "@/shared/hooks/useFilter";
 
 import NotFound from "@/assets/not-found.svg?react";
 
-import { VideoSkeleton } from "./video-skeleton";
-import { VideoCard } from "./video-card";
 import { Pagination } from "@/components/pagination";
 import { FilterBar } from "@/components/filter-bar";
+import { VideoSkeleton } from "./video-skeleton";
+import { VideoCard } from "./video-card";
 
 interface PayloadVideoStatus {
   id: string;
@@ -31,13 +31,8 @@ export function Videos() {
       console.log("Socket disconnected");
     }
 
-    async function onVideoStatusEvent({
-      id,
-      state,
-      message,
-      cover,
-    }: PayloadVideoStatus) {
-      console.log("Video status event", id, state, message, cover);
+    async function onVideoStatusEvent(data: PayloadVideoStatus) {
+      console.log("Video status event:", data);
     }
 
     socket.on("connect", onConnect);
@@ -47,7 +42,7 @@ export function Videos() {
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      socket.off("video-status", onVideoStatusEvent);
+      socket.off("video:status", onVideoStatusEvent);
     };
   }, []);
 

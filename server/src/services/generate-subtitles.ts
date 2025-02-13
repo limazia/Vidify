@@ -16,10 +16,10 @@ interface GenerateSubtitle {
 }
 
 export async function generateSubtitle({ text, id, config }: GenerateSubtitle) {
-  try {
-    const folderPrefix = `video_${id}`;
-    const keyPrefix = `audios/${folderPrefix}/`;
+  const folderPrefix = `video_${id}`;
+  const keyPrefix = `videos/video_${id}/`;
 
+  try {
     const params: StartSpeechSynthesisTaskCommandInput = {
       ...config,
       OutputS3KeyPrefix: keyPrefix,
