@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function VideoSkeleton() {
   return (
     <>
-      {Array.from({ length: 2 }).map((_, index) => (
+      {Array.from({ length: 3 }).map((_, index) => (
         <Card key={index}>
           <div className="relative flex items-center justify-center">
             <div className="w-full h-48 bg-gray-300 rounded-b-none rounded-md" />

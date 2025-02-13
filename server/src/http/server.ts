@@ -16,6 +16,9 @@ const server = createServer(app);
 
 const io = initializeSocket(server);
 
+app.set("view engine", "ejs");
+app.set("views", paths.views);
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/results", express.static(paths.results));

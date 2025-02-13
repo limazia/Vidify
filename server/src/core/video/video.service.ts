@@ -49,7 +49,7 @@ class VideoService {
     const cachedResult = await CacheService.getCache(cacheKey);
 
     if (cachedResult) {
-      return cachedResult;
+      //return cachedResult;
     }
 
     try {

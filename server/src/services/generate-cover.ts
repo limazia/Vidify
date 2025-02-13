@@ -7,17 +7,16 @@ import path from "path";
 interface GenerateCoverParams {
   id: string;
   prompt: string;
-  title: string;
 }
 
-export async function generateCover({
-  id,
-  prompt,
-  title,
-}: GenerateCoverParams) {
-  if (!prompt || !title) {
-    throw new Error("Prompt and title are required");
+export async function generateCover({ id, prompt }: GenerateCoverParams) {
+  if (!id || !prompt) {
+    throw new Error("id and prompt are required");
   }
+
+  const folderPrefix = `video_${id}`;
+  const folderPath = path.join(paths.results, folderPrefix);
+  const backgroundFilePath = path.join(folderPath, "cover_background.jpg");
 
   try {
     const result = await openai.images.generate({
@@ -35,11 +34,6 @@ export async function generateCover({
     const imageUrl = result.data[0].url;
     console.log("Generated image URL:", imageUrl);
 
-    const folderPrefix = `video_${id}`;
-    const folderPath = path.join(paths.results, folderPrefix);
-    const backgroundFilePath = path.join(folderPath, "cover_background.png");
-    const coverFilePath = path.join(folderPath, "cover.jpg");
-
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
     }
@@ -47,24 +41,9 @@ export async function generateCover({
     const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
     fs.writeFileSync(backgroundFilePath, response.data);
 
-    const { data } = await axios.post("http://localhost:5001/generate", {
-      id,
-      title,
+    return {
       image: imageUrl,
-    });
-
-    if (!data.image) {
-      throw new Error("No image data received");
-    }
-
-    const base64Image = data.image.split(";base64,").pop();
-    if (!base64Image) {
-      throw new Error("Invalid Base64 image format");
-    }
-
-    fs.writeFileSync(coverFilePath, Buffer.from(base64Image, "base64"));
-
-    return coverFilePath;
+    };
   } catch (err) {
     console.error("Error generating cover:", (err as Error).message);
     throw err;

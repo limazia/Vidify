@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "dom"],
     "module": "Node16",
     "forceConsistentCasingInFileNames": true, 
     "resolveJsonModule": true,

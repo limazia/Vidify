@@ -17,14 +17,17 @@ const doc = {
     {
       name: "Video",
     },
+    {
+      name: "Cover",
+    },
   ],
 };
 
 const output = "./swagger.json";
 const routes = ["./routes/index.ts"];
 
-swaggerAutogen()(output, routes, doc).then(() => {
-  //await import("../app.js");
+swaggerAutogen()(output, routes, doc).then(async () => {
+  await import("../app.js");
 
   console.log("🧊 swagger.json gerado com sucesso!");
 });

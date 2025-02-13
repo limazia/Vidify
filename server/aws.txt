@@ -1,0 +1,3 @@
+https://vidify-540265187770.s3-accesspoint.us-east-1.amazonaws.com/audios/video_15fcf2bc-1e46-419f-83b2-22b59705b9f8/.b77ad898-7d9f-4ace-be48-49b9d7c691e1.mp3
+
+https://${AAAA}.s3-accesspoint.${REGION}.amazonaws.com/audios/${video_id}/.b77ad898-7d9f-4ace-be48-49b9d7c691e1.mp3

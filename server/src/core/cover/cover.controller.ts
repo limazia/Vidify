@@ -3,25 +3,9 @@ import { Request, Response } from "express";
 import { coverService } from "./cover.service";
 
 class CoverController {
-  async store(request: Request, response: Response) {
-    const { id, title, image: background } = request.body;
-
-    if (!id || !title || !background) {
-      return response
-        .status(400)
-        .json({ error: "Título e imagem são obrigatórios" });
-    }
-
-    const { image } = await coverService.generate({
-      id,
-      title,
-      image: background,
-    });
-
-    return response.json({ image });
-  }
-
   async preview(request: Request, response: Response) {
+    // #swagger.tags = ['Cover']
+
     return response.render("cover", {
       title: "pre visualização",
       image:

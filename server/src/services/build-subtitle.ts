@@ -1,25 +1,40 @@
-import { exec as execCallback } from "child_process";
-import fs from "fs/promises";
+import { exec as execCallback } from "node:child_process";
+import { promises as fs } from "node:fs";
 import { promisify } from "node:util";
+import { join } from "node:path";
+
+const { parse, stringify } = require("ass-compiler");
 
 import { paths } from "@/shared/config/paths";
 import { Mark } from "@/shared/types/mark";
 
-const { parse, stringify } = require("ass-compiler");
-
 const exec = promisify(execCallback);
 
-export async function getMarks(filePathMarks: string): Promise<Mark[]> {
-  const content = await fs.readFile(filePathMarks, "utf8");
-
-  const lines = content.split("\n").filter((line) => line.trim().length > 0);
-
-  const marks = lines.map((line) => JSON.parse(line));
-
-  return marks as Mark[];
+interface SubtitleFiles {
+  marks: string;
+  captions: string;
+  captionsAss: string;
 }
 
-// Função para converter milissegundos em formato SRT (HH:MM:SS,mmm)
+function getSubtitlePaths(id: string): SubtitleFiles {
+  const folderPrefix = `video_${id}`;
+  const folderPath = join(paths.results, folderPrefix);
+
+  return {
+    marks: join(folderPath, "subtitles.marks"),
+    captions: join(folderPath, "captions.srt"),
+    captionsAss: join(folderPath, "captions.ass"),
+  };
+}
+
+async function getMarks(filePath: string): Promise<Mark[]> {
+  const content = await fs.readFile(filePath, "utf8");
+  return content
+    .split("\n")
+    .filter((line) => line.trim().length > 0)
+    .map((line) => JSON.parse(line));
+}
+
 function convertTime(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const hours = Math.floor(totalSeconds / 3600);
@@ -33,12 +48,10 @@ function convertTime(ms: number): string {
   )}`;
 }
 
-// Função para adicionar zeros à esquerda
 function pad(num: number, size = 2): string {
   return num.toString().padStart(size, "0");
 }
 
-// Função para criar legendas a partir de um array de marcas
 function createCaptions(marks: Mark[], maxTimeDiff = 2000): string {
   let captions = "";
   let startTime = convertTime(marks[0].time);
@@ -49,14 +62,14 @@ function createCaptions(marks: Mark[], maxTimeDiff = 2000): string {
     const timeDiff = marks[i].time - marks[i - 1].time;
     const tempSentence = [...words, marks[i].value].join(" ");
 
-    // Limitar a quantidade de caracteres em uma legenda
     if (timeDiff <= maxTimeDiff && tempSentence.length < 64) {
       words.push(marks[i].value);
     } else {
-      const nextStartTime = convertTime(marks[i].time); // hora de início da próxima palavra
+      const nextStartTime = convertTime(marks[i].time);
       const endTime = marks[i - 1]
         ? convertTime(Math.min(marks[i - 1].time + 500, marks[i].time - 100))
-        : convertTime(marks[i].time + 1000); // hora de término da palavra
+        : convertTime(marks[i].time + 1000);
+
       captions += `${captionIndex++}\n${startTime} --> ${endTime}\n${formatCaption(
         words.join(" ")
       )}\n\n`;
@@ -66,7 +79,7 @@ function createCaptions(marks: Mark[], maxTimeDiff = 2000): string {
     }
   }
 
-  const endTime = convertTime(marks[marks.length - 1].time + 1000); // adiciona 1 segundo ao final da última palavra
+  const endTime = convertTime(marks[marks.length - 1].time + 1000);
   captions += `${captionIndex}\n${startTime} --> ${endTime}\n${formatCaption(
     words.join(" ")
   )}\n\n`;
@@ -74,63 +87,55 @@ function createCaptions(marks: Mark[], maxTimeDiff = 2000): string {
   return captions;
 }
 
-// Função para formatar uma legenda para ter no máximo 32 caracteres por linha
 function formatCaption(caption: string): string {
-  if (caption.length <= 32) {
-    return caption;
-  }
+  if (caption.length <= 32) return caption;
 
-  let lineBreakIndex = caption.indexOf(" ", 32);
-  if (lineBreakIndex === -1 || lineBreakIndex > 64) {
-    lineBreakIndex = 32;
-  }
+  const lineBreakIndex = caption.indexOf(" ", 32);
+  if (lineBreakIndex === -1 || lineBreakIndex > 64) return caption;
 
-  return (
-    caption.slice(0, lineBreakIndex) + "\n" + caption.slice(lineBreakIndex + 1)
-  );
+  return `${caption.slice(0, lineBreakIndex)}\n${caption.slice(
+    lineBreakIndex + 1
+  )}`;
 }
 
-export async function styleFontAss(filePath: string) {
-  // get content from filePath
+async function styleFontAss(filePath: string): Promise<void> {
   const content = await fs.readFile(filePath, "utf8");
-
   const parsedASS = parse(content);
 
-  parsedASS.styles.style[0].Fontsize = "15";
-  parsedASS.styles.style[0].PrimaryColour = "&H00FFFF&";
-  parsedASS.styles.style[0].Italic = "1";
+  parsedASS.styles.style[0] = {
+    ...parsedASS.styles.style[0],
+    Fontsize: "15",
+    PrimaryColour: "&H00FFFF&",
+    Italic: "1",
+  };
 
-  const newParsedAss = stringify(parsedASS);
-
-  // console.log('decompiledText', decompiledText)
-
-  await fs.writeFile(filePath, newParsedAss);
+  await fs.writeFile(filePath, stringify(parsedASS));
 }
 
-export async function buildSubtitle(id: string) {
+function escapePath(path: string): string {
+  return `"${path}"`;
+}
+
+export async function buildSubtitle(id: string): Promise<string> {
+  const files = getSubtitlePaths(id);
+
   try {
-    const folderPrefix = `video_${id}`;
-    const filePathMarks = `${paths.results}/${folderPrefix}/subtitles.marks`;
-
-    const marks = await getMarks(filePathMarks);
-
+    const marks = await getMarks(files.marks);
     const captions = createCaptions(marks);
 
-    await fs.writeFile(
-      `${paths.results}/${folderPrefix}/captions.srt`,
-      captions
-    );
+    await fs.writeFile(files.captions, captions);
 
-    const outputAss = `${paths.results}/${folderPrefix}/captions.ass`;
+    // Escape the file paths for FFmpeg
+    const ffmpegCommand = `ffmpeg -i ${escapePath(files.captions)} ${escapePath(
+      files.captionsAss
+    )}`;
+    await exec(ffmpegCommand);
 
-    await exec(
-      `ffmpeg -i ${paths.results}/${folderPrefix}/captions.srt ${outputAss}`
-    );
-
-    await styleFontAss(outputAss);
+    await styleFontAss(files.captionsAss);
 
     return captions;
-  } catch (error) {
-    console.error("Falha ao executar ffmpeg:", error);
+  } catch (err) {
+    console.error("Error building subtitle:", (err as Error).message);
+    throw err;
   }
 }
