@@ -8,13 +8,16 @@
   "host": "localhost:3000",
   "servers": [
     {
-      "url": "http://localhost"
+      "url": "http://localhost:4000"
     }
   ],
   "basePath": "/",
   "tags": [
     {
       "name": "Video"
+    },
+    {
+      "name": "Cover"
     }
   ],
   "schemes": [
@@ -80,7 +83,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "term": {
+                "prompt": {
+                  "example": "any"
+                },
+                "model": {
                   "example": "any"
                 }
               }
@@ -135,6 +141,19 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/cover/preview": {
+      "get": {
+        "tags": [
+          "Cover"
+        ],
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }

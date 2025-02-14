@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import fs from "node:fs";
+import { v4 as uuid } from "uuid";
 
 import { videoService } from "./video.service";
 import { HttpError } from "@/http/errors/http-error";
@@ -24,20 +25,31 @@ class VideoController {
 
       response.status(200).json(videos);
     } catch (error) {
-      throw new HttpError("Failed to fetch videos", 500, "error", "video_fetch_error");
+      throw new HttpError(
+        "Failed to fetch videos",
+        500,
+        "error",
+        "video_fetch_error"
+      );
     }
   }
 
   async store(request: Request, response: Response) {
     // #swagger.tags = ['Video']
     const { prompt, model } = request.body;
+    const videoId = uuid();
 
     try {
-      const { id } = await videoService.generate(prompt, model);
+      videoService.generate(videoId, prompt, model);
 
-      response.status(200).json({ id });
+      response.status(200).json({ id: videoId });
     } catch (error) {
-      throw new HttpError("Failed to generate video", 500, "error", "video_generate_error");
+      throw new HttpError(
+        "Failed to generate video",
+        500,
+        "error",
+        "video_generate_error"
+      );
     }
   }
 
@@ -49,7 +61,12 @@ class VideoController {
       await videoService.delete(id);
       response.status(200).json({ message: "Video deleted" });
     } catch (error) {
-      throw new HttpError("Failed to delete video", 500, "error", "video_delete_error");
+      throw new HttpError(
+        "Failed to delete video",
+        500,
+        "error",
+        "video_delete_error"
+      );
     }
   }
 
@@ -61,12 +78,20 @@ class VideoController {
       const video = await videoService.download(id);
 
       response.setHeader("Content-Type", "video/mp4");
-      response.setHeader("Content-Disposition", `attachment; filename=${id}.mp4`);
+      response.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${id}.mp4`
+      );
 
       const stream = fs.createReadStream(video);
       stream.pipe(response);
     } catch (error) {
-      throw new HttpError("Failed to download video", 500, "error", "video_download_error");
+      throw new HttpError(
+        "Failed to download video",
+        500,
+        "error",
+        "video_download_error"
+      );
     }
   }
 }

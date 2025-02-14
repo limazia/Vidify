@@ -1,7 +1,7 @@
-import { v4 as uuid } from "uuid";
-import {  DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import path from "node:path";
 import fs from "node:fs";
+import { v4 as uuid } from "uuid";
 
 import { HttpError } from "@/http/errors/http-error";
 import { paths } from "@/shared/config/paths";
@@ -42,35 +42,31 @@ class VideoService {
       direction: "asc",
     };
 
-    const cacheKey = CacheService.generateCacheKey({
-      query,
-      page,
-      perPage,
-      sortOrder,
-    });
+    // const cacheKey = CacheService.generateCacheKey({
+    //   query,
+    //   page,
+    //   perPage,
+    //   sortOrder,
+    // });
 
-    const cachedResult = await CacheService.getCache(cacheKey);
+    // const cachedResult = await CacheService.getCache(cacheKey);
 
-    if (cachedResult) {
-      // Check if there are new videos since the last cache update
-      const lastCachedVideoTime =
-        cachedResult.data.length > 0
-          ? new Date(cachedResult.data[cachedResult.data.length - 1].created_at)
-          : new Date(0); // fallback to epoch if no videos
+    // if (cachedResult) {
+    //   const lastCachedVideoTime =
+    //     cachedResult.data.length > 0
+    //       ? new Date(cachedResult.data[cachedResult.data.length - 1].created_at)
+    //       : new Date(0);
 
-      const newVideosCount = await connection("videos")
-        .where("created_at", ">", lastCachedVideoTime)
-        .count("* as count")
-        .first();
+    //   const newVideosCount = await connection("videos")
+    //     .where("created_at", ">", lastCachedVideoTime)
+    //     .count("* as count")
+    //     .first();
 
-      if (Number(newVideosCount?.count) === 0) {
-        // No new videos, return cached result
-        return cachedResult;
-      }
-      // If there are new videos, proceed with a new query
-    }
+    //   if (Number(newVideosCount?.count) === 0) {
+    //     return cachedResult;
+    //   }
+    // }
 
-    // If there's no cached result or there are new videos, perform a new query
     try {
       const baseQuery = connection("videos")
         .leftJoin("video_files", "videos.id", "video_files.video_id")
@@ -153,18 +149,16 @@ class VideoService {
         },
       };
 
-      await CacheService.setCache(cacheKey, result);
+      // await CacheService.setCache(cacheKey, result);
 
       return result;
     } catch (err) {
-      console.error(`Error: ${(err as Error).message}`);
+      console.error("Error listing video:", (err as Error).message);
       throw err;
     }
   }
 
-  async generate(prompt: string, model: Model): Promise<{ id: string }> {
-    const videoId = uuid();
-
+  async generate(videoId: string, prompt: string, model: Model) {
     try {
       await connection.transaction(async (trx) => {
         await trx("videos").insert({
@@ -186,14 +180,10 @@ class VideoService {
         await trx.commit();
       });
 
-      await CacheService.invalidateCache();
+      //await CacheService.invalidateCache();
       await videoGenerator(videoId, prompt, model);
-
-      return {
-        id: videoId,
-      };
     } catch (err) {
-      console.error(`Error generating video: ${(err as Error).message}`);
+      console.error("Error generating video:", (err as Error).message);
       throw err;
     }
   }
@@ -238,7 +228,7 @@ class VideoService {
       console.log(`${folderPath} and S3 folder ${s3Prefix} are deleted!`);
       await CacheService.invalidateCache();
     } catch (err) {
-      console.error(`Error: ${(err as Error).message}`);
+      console.error("Error deleting video:", (err as Error).message);
       throw err;
     }
   }
@@ -256,7 +246,7 @@ class VideoService {
 
       return files.video;
     } catch (err) {
-      console.error(`Error: ${(err as Error).message}`);
+      console.error("Error downloading video:", (err as Error).message);
       throw err;
     }
   }

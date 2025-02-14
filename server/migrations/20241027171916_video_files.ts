@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("video_url");
     table.integer("width");
     table.integer("height");
-    table.integer("size");
+    table.string("size");
     table.string("type");
 
     table

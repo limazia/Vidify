@@ -118,7 +118,7 @@ export function Form({ onSubmit }: FormProps) {
               <Button
                 type="submit"
                 size="icon"
-                className="bg-purple-600 hover:bg-purple-700 text-white/60 disabled:text-white/60 rounded-md"
+                className="bg-purple-600 hover:bg-purple-700 text-white rounded-md"
                 disabled={isSubmitting || !isDirty || !isValid}
               >
                 {isSubmitting ? (

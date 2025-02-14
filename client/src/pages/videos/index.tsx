@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { socket } from "@/shared/lib/socket";
 import { useVideos } from "@/shared/hooks/useVideo";
@@ -21,6 +22,7 @@ interface PayloadVideoStatus {
 export function Videos() {
   const { videos, isLoadingVideos, isErrorVideos } = useVideos();
   const { pageIndex, setPageIndex } = useFilter();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     function onConnect() {
@@ -31,8 +33,21 @@ export function Videos() {
       console.log("Socket disconnected");
     }
 
-    async function onVideoStatusEvent(data: PayloadVideoStatus) {
-      console.log("Video status event:", data);
+    function onVideoStatusEvent(data: PayloadVideoStatus) {
+      console.log("Video status event", data);
+
+      if (videos?.data) {
+        const videoIndex = videos.data.findIndex((v) => v.id === data.id);
+        if (videoIndex !== -1) {
+          queryClient.setQueryData(["videos"], (oldData: any) => {
+            if (oldData?.data) {
+              oldData.data[videoIndex].status = data;
+              return { ...oldData };
+            }
+            return oldData;
+          });
+        }
+      }
     }
 
     socket.on("connect", onConnect);

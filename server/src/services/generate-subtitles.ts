@@ -17,7 +17,7 @@ interface GenerateSubtitle {
 
 export async function generateSubtitle({ text, id, config }: GenerateSubtitle) {
   const folderPrefix = `video_${id}`;
-  const keyPrefix = `videos/video_${id}/`;
+  const keyPrefix = `videos/${folderPrefix}/`;
 
   try {
     const params: StartSpeechSynthesisTaskCommandInput = {

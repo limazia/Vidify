@@ -21,8 +21,8 @@ export async function generateAudio({ id, text, config }: GenerateAudio) {
   }
 
   const folderPrefix = `video_${id}`;
-  const keyPrefix = `videos/video_${id}/`;
-  
+  const keyPrefix = `videos/${folderPrefix}/`;
+
   try {
     const params: StartSpeechSynthesisTaskCommandInput = {
       ...config,

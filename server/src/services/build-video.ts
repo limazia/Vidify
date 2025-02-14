@@ -2,12 +2,14 @@ import { exec as execCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { s3 } from "@/shared/lib/aws";
 import { getMediaDuration } from "@/shared/utils";
 import { paths } from "@/shared/config/paths";
+import { connection } from "@/database";
+import { env } from "@/shared/config/env";
 
 const exec = promisify(execCallback);
 
@@ -16,26 +18,28 @@ async function uploadToS3(id: string, videoBuffer: Buffer) {
 
   await s3.send(
     new PutObjectCommand({
-      Bucket: "dark-audio-generated",
+      Bucket: env.AWS_BUCKET,
       Key: keyPrefix,
       Body: videoBuffer,
       ContentType: "video/mp4",
     })
   );
 
-  // Generate a presigned URL for downloading (expires in 24 hours)
   const getCommand = new GetObjectCommand({
-    Bucket: "dark-audio-generated",
+    Bucket: env.AWS_BUCKET,
     Key: keyPrefix,
   });
 
   const downloadUrl = await getSignedUrl(s3, getCommand, { expiresIn: 86400 });
 
-  const s3Uri = `s3://dark-audio-generated/${keyPrefix}`;
+  const permanentUrl = `https://${env.AWS_BUCKET}.s3.amazonaws.com/${keyPrefix}`;
+
+  const s3Uri = `s3://${env.AWS_BUCKET}/${keyPrefix}`;
 
   return {
     s3Uri,
     downloadUrl,
+    permanentUrl,
   };
 }
 
@@ -76,7 +80,7 @@ export async function buildVideo(id: string) {
     "${files.finalVideo}"
 `.replace(/(\n)/g, "");
 
-    console.log("FFmpeg command:", command);
+    //console.log("FFmpeg command:", command);
 
     await exec(command);
   } catch (err) {
@@ -85,15 +89,30 @@ export async function buildVideo(id: string) {
   }
 
   try {
-    // Read the generated video file
     const videoBuffer = await readFile(files.finalVideo);
 
-    // Upload to S3 and get URLs
+    const fileStats = await stat(files.finalVideo);
+    const fileSizeInBytes = fileStats.size;
+
+    const fileSizeInMB = (fileSizeInBytes / (1024 * 1024)).toFixed(2) + " MB";
+
     const result = await uploadToS3(id, videoBuffer);
 
     console.log("Video uploaded successfully to S3");
     console.log("S3 URI:", result.s3Uri);
     console.log("Download URL:", result.downloadUrl);
+    console.log("Permanent URL:", result.permanentUrl);
+    console.log("File size:", fileSizeInMB);
+
+    await connection("video_files")
+      .update({
+        video_url: result.permanentUrl,
+        width: 1080,
+        height: 1920,
+        size: fileSizeInMB,
+        type: "video/mp4",
+      })
+      .where("video_id", id);
 
     return result;
   } catch (err) {
